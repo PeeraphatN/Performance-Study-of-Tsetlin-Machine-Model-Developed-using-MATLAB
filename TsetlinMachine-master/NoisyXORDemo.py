@@ -7,15 +7,15 @@ import pyximport; pyximport.install(setup_args={
 
 import MultiClassTsetlinMachine
 
-# Parameters for the Tsetlin Machine
-T = 15 
-s = 3.9
-number_of_clauses = 20
-states = 100 
-
 # Parameters of the pattern recognition problem
 number_of_features = 12
 number_of_classes = 2
+
+# Parameters for the Tsetlin Machine
+T = 15 
+s = 3.9
+number_of_clauses = 6
+states = 100 
 
 # Training configuration
 epochs = 200
@@ -37,6 +37,8 @@ tsetlin_machine = MultiClassTsetlinMachine.MultiClassTsetlinMachine(number_of_cl
 tsetlin_machine.fit(X_training, y_training, y_training.shape[0], epochs=epochs)
 
 # Some performance statistics
+
+tsetlin_machine.print_caluse_signs()
 
 print ("Accuracy on test data (no noise):", tsetlin_machine.evaluate(X_test, y_test, y_test.shape[0]))
 print ("Accuracy on training data (40% noise):", tsetlin_machine.evaluate(X_training, y_training, y_training.shape[0]))

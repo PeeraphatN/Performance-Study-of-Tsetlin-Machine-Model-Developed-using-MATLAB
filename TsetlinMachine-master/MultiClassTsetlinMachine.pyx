@@ -362,3 +362,10 @@ cdef class MultiClassTsetlinMachine:
 					Xi[j] = X[example_id,j]
 				self.update(Xi, target_class)
 		return
+	def print_caluse_signs(self):
+		cdef int i,j
+		for i in xrange(self.number_of_classes):
+			print("Class", i, "Clauses:")
+			for j in xrange(self.clause_count[i]):
+				print("Clause", self.clause_sign[i,j,0], "Sign:", self.clause_sign[i,j,1])
+			print()

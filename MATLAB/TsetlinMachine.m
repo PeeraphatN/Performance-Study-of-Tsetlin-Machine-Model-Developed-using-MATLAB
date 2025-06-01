@@ -42,7 +42,7 @@ classdef TsetlinMachine
             % Set up the Tsetlin Machine structure
             for i = 1:number_of_classes
                 for j = 1:floor(number_of_clauses / number_of_classes)
-                    obj.clause_sign(i, obj.clause_count(i) + 1, 1) = (i - 1) * (number_of_clauses / number_of_classes) + j;
+                    obj.clause_sign(i, obj.clause_count(i) + 1, 1) = (i - 1) * floor(number_of_clauses / number_of_classes) + j;
                     if mod(j, 2) == 1
                         obj.clause_sign(i, obj.clause_count(i) + 1, 2) = 1;
                     else
@@ -120,7 +120,7 @@ classdef TsetlinMachine
                 end
             end
 
-            accuracy = correct_predictions / num_samples;
+            accuracy = (correct_predictions / num_samples);
         end
 
         function obj = update(obj, X, target_class)
@@ -136,9 +136,9 @@ classdef TsetlinMachine
             obj.feedback_to_clauses = zeros(obj.number_of_clauses, 1);
 
             for j = 1:obj.number_of_clauses
-                if rand() < (1 / obj.threshold) * (obj.threshold - obj.class_sum(target_class))
+                if rand() < floor(1 / obj.threshold) * (obj.threshold - obj.class_sum(target_class))
                     obj.feedback_to_clauses(j) = 1;
-                elseif rand() < (1 / obj.threshold) * (obj.threshold + obj.class_sum(target_class))
+                elseif rand() < floor(1 / obj.threshold) * (obj.threshold + obj.class_sum(target_class))
                     obj.feedback_to_clauses(j) = -1;
                 end
             end

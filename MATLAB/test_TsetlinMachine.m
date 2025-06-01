@@ -13,8 +13,8 @@ function test_TsetlinMachine()
     epochs = 200;
 
     % Loading of training and test data
-    training_data = load("C:\Users\Peera\OneDrive\Desktop\Work\Research\DataSet\XOR\Noisy\NoisyXORTrainingData.txt");
-    test_data = load("C:\Users\Peera\OneDrive\Desktop\Work\Research\DataSet\XOR\Noisy\NoisyXORTestData.txt");
+    training_data = load("C:\Work\Research\DataSet\XOR\Noisy\NoisyXORTrainingData.txt");
+    test_data = load("C:\Work\Research\DataSet\XOR\Noisy\NoisyXORTestData.txt");
 
     X_training = training_data(:, 1:number_of_features); % Input features
     y_training = training_data(:, number_of_features + 1); % Target value
