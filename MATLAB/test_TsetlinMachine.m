@@ -2,7 +2,7 @@ function test_TsetlinMachine()
     % Parameters for the Tsetlin Machine
     T = 15; 
     s = 3.9;
-    number_of_clauses = 20;
+    number_of_clauses = 10;
     states = 100; 
 
     % Parameters of the pattern recognition problem
