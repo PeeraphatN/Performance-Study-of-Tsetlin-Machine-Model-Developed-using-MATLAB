@@ -21,7 +21,7 @@ states = 100
 epochs = 200
 
 # Loading of training and test data
-training_data = np.loadtxt(r"C:\Work\Research\Project\DataSet\XOR\Noisy\NoisyXORTrainingData.csv").astype(dtype=np.int32)
+training_data = np.loadtxt(r"C:\Work\Research\Project\DataSet\XOR\Noisy\NoisyXORTrainingData.csv",delimiter=',').astype(dtype=np.int32)
 test_data = np.loadtxt(r"C:\Work\Research\Project\DataSet\XOR\Noisy\NoisyXORTestData.csv", delimiter=',').astype(dtype=np.int32)
 
 X_training = training_data[:,0:12] # Input features
