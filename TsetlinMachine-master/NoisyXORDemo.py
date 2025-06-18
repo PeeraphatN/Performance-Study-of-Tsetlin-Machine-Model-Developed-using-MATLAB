@@ -12,7 +12,7 @@ number_of_features = 12
 number_of_classes = 2
 
 # Parameters for the Tsetlin Machine
-T = 15 
+T = 15
 s = 3.9
 number_of_clauses = 10
 states = 100 

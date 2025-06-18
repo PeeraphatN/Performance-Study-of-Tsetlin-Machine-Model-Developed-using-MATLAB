@@ -10,13 +10,13 @@ number_of_features = 784
 number_of_classes = 10
 
 # Parameters for the Tsetlin Machine
-T = 15 
+T = 15
 s = 3.9
-number_of_clauses = 100
+number_of_clauses = 1000
 states = 100
 
 # Training configuration
-epochs = 400
+epochs = 500
 
 # Loading of training and test data
 training_data = np.loadtxt(r"C:\Work\Research\Project\DataSet\MNIST\MNISTTraining.txt").astype(dtype=np.int32)
@@ -31,10 +31,6 @@ tsetlin_machine = MultiClassTsetlinMachine.MultiClassTsetlinMachine(number_of_cl
 
 starttime = np.datetime64("now")
 print ("Training the Tsetlin Machine on MNIST data ...")
-
-tsetlin_machine.fit(X_training, y_training, y_training.shape[0], epochs=epochs)
-
-print ("Training completed. total time used:", np.datetime64("now") - starttime)
 print ("Hyperparameters:")
 print ("Number of features:", number_of_features)
 print ("Number of classes:", number_of_classes)
@@ -45,6 +41,10 @@ print ("Number of states:", states)
 print ("epochs:", epochs)
 print ("Number of training samples:", y_training.shape[0])
 print ("Number of test samples:", y_test.shape[0])
+
+tsetlin_machine.fit(X_training, y_training, y_training.shape[0], epochs=epochs)
+
+print ("Training completed. total time used:", np.datetime64("now") - starttime)
 print ("\nEvaluating the Tsetlin Machine on test and training data...\n")
 print ("Accuracy on test data:", tsetlin_machine.evaluate(X_test, y_test, y_test.shape[0]))
 print ("Accuracy on training data:", tsetlin_machine.evaluate(X_training, y_training, y_training.shape[0]))
