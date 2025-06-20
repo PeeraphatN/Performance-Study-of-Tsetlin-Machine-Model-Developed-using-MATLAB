@@ -26,8 +26,9 @@ function test_TsetlinMachine()
     tsetlin_machine = TsetlinMachine(number_of_classes, number_of_clauses, number_of_features, states, s, T);
 
     % Training of the Tsetlin Machine in batch mode
+    profile on
     tsetlin_machine = tsetlin_machine.fit(X_training, y_training, epochs);
-
+    profile viewer
     % Some performance statistics
     accuracy_test = tsetlin_machine.evaluate(X_test, y_test);
     accuracy_train = tsetlin_machine.evaluate(X_training, y_training);
