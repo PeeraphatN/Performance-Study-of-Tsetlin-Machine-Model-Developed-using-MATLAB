@@ -24,21 +24,35 @@ epochs = 200
 training_data = np.loadtxt(r"C:\Work\Research\Project\DataSet\XOR\Noisy\NoisyXORTrainingData.csv",delimiter=',').astype(dtype=np.int32)
 test_data = np.loadtxt(r"C:\Work\Research\Project\DataSet\XOR\Noisy\NoisyXORTestData.csv", delimiter=',').astype(dtype=np.int32)
 
-X_training = training_data[:,0:12] # Input features
-y_training = training_data[:,12] # Target value
+X_training = training_data[:,0:number_of_features] # Input features
+y_training = training_data[:,number_of_features] # Target value
 
-X_test = test_data[:,0:12] # Input features
-y_test = test_data[:,12] # Target value
+X_test = test_data[:,0:number_of_features] # Input features
+y_test = test_data[:,number_of_features] # Target value
 
 # This is a multiclass variant of the Tsetlin Machine, capable of distinguishing between multiple classes
 tsetlin_machine = MultiClassTsetlinMachine.MultiClassTsetlinMachine(number_of_classes, number_of_clauses, number_of_features, states, s, T)
 
 # Training of the Tsetlin Machine in batch mode. The Tsetlin Machine can also be trained online
+print ("Training the Tsetlin Machine on MNIST data ...")
+print ("Hyperparameters:")
+print ("Number of features:", number_of_features)
+print ("Number of classes:", number_of_classes)
+print ("T:", T)
+print ("s:", s)
+print ("Number of clauses:", number_of_clauses)
+print ("Number of states:", states)
+print ("epochs:", epochs)
+print ("Number of training samples:", y_training.shape[0])
+print ("Number of test samples:", y_test.shape[0])
+
+starttime = np.datetime64("now")
 tsetlin_machine.fit(X_training, y_training, y_training.shape[0], epochs=epochs)
+print ("Training completed. total time used:", (np.datetime64("now") - starttime) / np.timedelta64(1, 's'))
+
+print("\nEvaluating the Tsetlin Machine on test and training data...\n\n")
 
 # Some performance statistics
-
-# tsetlin_machine.print_caluse_signs()
 
 print ("Accuracy on test data (no noise):", tsetlin_machine.evaluate(X_test, y_test, y_test.shape[0]))
 print ("Accuracy on training data (40% noise):", tsetlin_machine.evaluate(X_training, y_training, y_training.shape[0]))
