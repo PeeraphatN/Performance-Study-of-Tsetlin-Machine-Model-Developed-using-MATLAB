@@ -1,4 +1,4 @@
-function test_TsetlinMachine()
+function NoisyXOR()
     % Parameters for the Tsetlin Machine
     T = 15; 
     s = 3.9;
@@ -25,16 +25,29 @@ function test_TsetlinMachine()
     % Create Tsetlin Machine Object
     tsetlin_machine = TsetlinMachine(number_of_classes, number_of_clauses, number_of_features, states, s, T);
 
-    % Training of the Tsetlin Machine in batch mode
-    profile on
-    tsetlin_machine = tsetlin_machine.fit(X_training, y_training, epochs);
-    profile viewer
-    % Some performance statistics
-    accuracy_test = tsetlin_machine.evaluate(X_test, y_test);
-    accuracy_train = tsetlin_machine.evaluate(X_training, y_training);
+    fprintf("Training the Tsetlin Machine on MNIST data ...\n");
+    fprintf("Hyperparameters:\n");
+    fprintf("Number of features: %d\n", number_of_features);
+    fprintf("Number of classes: %d\n", number_of_classes);
+    fprintf("T: %d\n", T);
+    fprintf("s: %.2f\n", s);
+    fprintf("Number of clauses: %d\n", number_of_clauses);
+    fprintf("Number of states: %d\n", states);
+    fprintf("Epochs: %d\n", epochs);
+    fprintf("Number of training samples: %d\n", length(y_training));
+    fprintf("Number of test samples: %d\n", length(y_test));
 
-    fprintf('Accuracy on test data (no noise): %.2f\n', accuracy_test);
-    fprintf('Accuracy on training data (40%% noise): %.2f\n', accuracy_train);
+    starttime = tic;
+    tsetlin_machine = tsetlin_machine.fit(X_training, y_training, epochs);
+    elapsed_time = toc(starttime);
+    fprintf("Training completed. Total time used: %.2f seconds\n", elapsed_time);
+
+    fprintf("\nEvaluating the Tsetlin Machine on test and training data...\n\n");
+    acc_test = tsetlin_machine.evaluate(X_test, y_test);
+    acc_train = tsetlin_machine.evaluate(X_training, y_training);
+    
+    fprintf("Accuracy on test data: %.4f\n", acc_test);
+    fprintf("Accuracy on training data: %.4f\n", acc_train);
 
     % Predictions
     sample1 = [1,0,1,1,1,0,1,1,1,0,0,0];
