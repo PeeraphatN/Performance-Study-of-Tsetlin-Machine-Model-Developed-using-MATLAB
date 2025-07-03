@@ -25,6 +25,7 @@ function NoisyXOR()
     % Create Tsetlin Machine Object
     tsetlin_machine = TsetlinMachine(number_of_classes, number_of_clauses, number_of_features, states, s, T);
 
+<<<<<<< HEAD:MATLAB/NoisyXOR.m
     fprintf("Training the Tsetlin Machine on MNIST data ...\n");
     fprintf("Hyperparameters:\n");
     fprintf("Number of features: %d\n", number_of_features);
@@ -48,6 +49,19 @@ function NoisyXOR()
     
     fprintf("Accuracy on test data: %.4f\n", acc_test);
     fprintf("Accuracy on training data: %.4f\n", acc_train);
+=======
+    % Training of the Tsetlin Machine in batch mode
+    profile on
+    tsetlin_machine = tsetlin_machine.fit(X_training, y_training, epochs);
+    profile viewer
+    
+    % Some performance statistics
+    accuracy_test = tsetlin_machine.evaluate(X_test, y_test);
+    accuracy_train = tsetlin_machine.evaluate(X_training, y_training);
+
+    fprintf('Accuracy on test data (no noise): %.2f\n', accuracy_test);
+    fprintf('Accuracy on training data (40%% noise): %.2f\n', accuracy_train);
+>>>>>>> 4f16c792424abaaf25982ec89c7e8ccd3c557706:MATLAB/test_TsetlinMachine.m
 
     % Predictions
     sample1 = [1,0,1,1,1,0,1,1,1,0,0,0];
