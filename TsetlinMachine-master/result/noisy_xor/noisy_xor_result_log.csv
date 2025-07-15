@@ -1,0 +1,2 @@
+number_of_features,number_of_classes,T,s,number_of_clauses,number_of_states,epochs,Accuracy on test data,Accuracy on training data,Time
+12,2,15,3.9,10,100,200,1.0,0.603,2.0
