@@ -10,14 +10,14 @@ import MultiClassTsetlinMachine
 parser = argparse.ArgumentParser()
 parser.add_argument("--T", type=int, default=15, help="Threshold (T)")
 parser.add_argument("--s", type=float, default=3.9, help="Sensitivity (s)")
-parser.add_argument("--clauses", type=int, help="Number of Clauses")
+parser.add_argument("--clauses", type=int,default=10 , help="Number of Clauses")
 parser.add_argument("--states", type=int, default=100, help="Number of States")
 parser.add_argument("--epochs", type=int, default=200, help="Number of Epochs")
 args = parser.parse_args()
 
 # Parameters of the pattern recognition problem
-number_of_features = 784
-number_of_classes = 10
+number_of_features = 12
+number_of_classes = 2
 
 # Parameters for the Tsetlin Machine
 T = args.T
@@ -29,8 +29,8 @@ states = args.states
 epochs = args.epochs
 
 # Loading of training and test data
-training_data = np.loadtxt(r"C:\Work\Research\Project\DataSet\XOR\Noisy\NoisyXORTrainingData.csv",delimiter=',').astype(dtype=np.int32)
-test_data = np.loadtxt(r"C:\Work\Research\Project\DataSet\XOR\Noisy\NoisyXORTestData.csv", delimiter=',').astype(dtype=np.int32)
+training_data = np.loadtxt(r"C:\Tsetlin Machine\Performance-Study-of-Tsetlin-Machine-Model-Developed-using-MATLAB\DataSet\XOR\Noisy\NoisyXORTrainingData.csv",delimiter=',').astype(dtype=np.int32)
+test_data = np.loadtxt(r"C:\Tsetlin Machine\Performance-Study-of-Tsetlin-Machine-Model-Developed-using-MATLAB\DataSet\XOR\Noisy\NoisyXORTestData.csv", delimiter=',').astype(dtype=np.int32)
 
 X_training = training_data[:,0:number_of_features] # Input features
 y_training = training_data[:,number_of_features] # Target value
