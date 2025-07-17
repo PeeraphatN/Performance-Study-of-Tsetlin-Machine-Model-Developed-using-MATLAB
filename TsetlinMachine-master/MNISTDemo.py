@@ -29,8 +29,8 @@ states = args.states
 epochs = args.epochs
 
 # Loading of training and test data
-training_data = np.loadtxt(r"C:\Work\Research\Project\DataSet\MNIST\MNISTTraining.txt").astype(dtype=np.int32)
-test_data = np.loadtxt(r"C:\Work\Research\Project\DataSet\MNIST\MNISTTest.txt").astype(dtype=np.int32)
+training_data = np.loadtxt(r"C:\Tsetlin Machine\Performance-Study-of-Tsetlin-Machine-Model-Developed-using-MATLAB\DataSet\MNIST\MNISTTraining.txt").astype(dtype=np.int32)
+test_data = np.loadtxt(r"C:\Tsetlin Machine\Performance-Study-of-Tsetlin-Machine-Model-Developed-using-MATLAB\DataSet\MNIST\MNISTTest.txt").astype(dtype=np.int32)
 X_training = training_data[:,0:number_of_features] # Input features
 y_training = training_data[:,number_of_features] # Class labels
 
