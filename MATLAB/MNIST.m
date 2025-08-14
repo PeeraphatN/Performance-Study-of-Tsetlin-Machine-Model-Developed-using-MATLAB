@@ -8,8 +8,8 @@ function MNIST()
     number_of_classes = 10;
     epochs = 500;
 
-    training_data = load("C:\Work\Research\Project\DataSet\MNIST\MNISTTraining.txt");
-    test_data = load("C:\Work\Research\Project\DataSet\MNIST\MNISTTest.txt");
+    training_data = load("..\DataSet\MNIST\MNISTTraining.txt");
+    test_data = load("..\DataSet\MNIST\MNISTTest.txt");
 
     X_training = training_data(:, 1:number_of_features); 
     y_training = training_data(:, number_of_features + 1); 
