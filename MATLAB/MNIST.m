@@ -32,7 +32,7 @@ function MNIST()
     fprintf("Number of test samples: %d\n", length(y_test));
 
     starttime = tic;
-    tsetlin_machine = tsetlin_machine.fit(X_training, y_training, epochs);
+    [tsetlin_machine, acc_log] = tsetlin_machine.fit(X_training, y_training, epochs);
     elapsed_time = toc(starttime);
     fprintf("Training completed. Total time used: %.2f seconds\n", elapsed_time);
 

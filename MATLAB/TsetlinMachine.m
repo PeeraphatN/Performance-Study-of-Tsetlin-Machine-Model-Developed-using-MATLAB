@@ -316,16 +316,13 @@ classdef TsetlinMachine < handle
         obj.feedback_to_clauses = feedback;
     end
 
-
-    function obj = fit(obj, X, y, epochs)
-        for epoch = 1:epochs
+    function [obj, acc_log] = fit(obj, X, y, epochs)
+        acc_log = zeros(epochs, 1);
+        for e = 1:epochs
             for i = 1:size(X, 1)
-                target_class = y(i) + 1;
-                if target_class > obj.number_of_classes
-                    error('target_class=%d exceeds number_of_classes=%d', target_class, obj.number_of_classes);
-                end
-                obj = obj.update(X(i, :), target_class);
+                obj = obj.update(X(i, :), y(i) + 1);
             end
+            acc_log(e) = obj.evaluate(X, y); % <-- เก็บ accuracy ทุก epoch
         end
     end
 

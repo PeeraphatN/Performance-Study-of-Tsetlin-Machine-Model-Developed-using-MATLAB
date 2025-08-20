@@ -38,7 +38,8 @@ function NoisyXOR()
     fprintf("Number of test samples: %d\n", length(y_test));
 
     starttime = tic;
-    tsetlin_machine = tsetlin_machine.fit(X_training, y_training, epochs);
+    [tsetlin_machine, acc_log] = tsetlin_machine.fit(X_training, y_training, epochs);
+
     elapsed_time = toc(starttime);
     fprintf("Training completed. Total time used: %.2f seconds\n", elapsed_time);
 
@@ -59,4 +60,23 @@ function NoisyXOR()
     fprintf('Prediction: x1 = 0, x2 = 1 -> y = %d\n', tsetlin_machine.predict(sample2));
     fprintf('Prediction: x1 = 0, x2 = 0 -> y = %d\n', tsetlin_machine.predict(sample3));
     fprintf('Prediction: x1 = 1, x2 = 1 -> y = %d\n', tsetlin_machine.predict(sample4));
+
+    % สร้างโฟลเดอร์เก็บ log
+    log_dir = fullfile("MATLAB", "result", "noisy_xor");
+    if ~exist(log_dir, 'dir')
+        mkdir(log_dir)
+    end
+
+    % บันทึก log ราย epoch
+    timestamp = datestr(now, "yyyymmdd_HHMMSS");
+    log_filename = fullfile(log_dir, sprintf("noisy_xor_epoch_log_%s.csv", timestamp));
+
+    acc_log = acc_log(:);
+    
+    % เขียนไฟล์ CSV พร้อมหัวข้อ
+    header = ["epoch", "accuracy"];
+    epochs_col = (1:epochs)';
+    log_table = table(epochs_col, acc_log, 'VariableNames', header);
+    writetable(log_table, log_filename);
+
 end
