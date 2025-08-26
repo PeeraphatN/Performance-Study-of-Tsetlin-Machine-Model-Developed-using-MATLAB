@@ -348,20 +348,26 @@ cdef class MultiClassTsetlinMachine:
 		cdef long[:] random_index
 
 		Xi = np.zeros((self.number_of_features,), dtype=np.int32)
-	
 		random_index = np.arange((number_of_examples),dtype=np.int32)
 
-		for epoch in xrange(epochs):			
+		acc_log = []
+
+		for epoch in range(epochs):            
 			np.random.shuffle(random_index)
 
-			for i in xrange(number_of_examples):
+			for i in range(number_of_examples):
 				example_id = random_index[i]
 				target_class = y[example_id]
 
-				for j in xrange(self.number_of_features):
+				for j in range(self.number_of_features):
 					Xi[j] = X[example_id,j]
 				self.update(Xi, target_class)
-		return
+
+			acc = self.evaluate(X, y, number_of_examples)
+			acc_log.append(acc)
+
+		return acc_log
+
 	def print_caluse_signs(self):
 		cdef int i,j
 		for i in xrange(self.number_of_classes):

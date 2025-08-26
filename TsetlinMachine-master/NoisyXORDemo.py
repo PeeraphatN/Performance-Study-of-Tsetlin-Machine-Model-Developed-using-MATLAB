@@ -55,7 +55,7 @@ print ("Number of training samples:", y_training.shape[0])
 print ("Number of test samples:", y_test.shape[0])
 
 starttime = np.datetime64("now")
-tsetlin_machine.fit(X_training, y_training, y_training.shape[0], epochs=epochs)
+acc_log = tsetlin_machine.fit(X_training, y_training, y_training.shape[0], epochs=epochs)
 duration = (np.datetime64("now") - starttime) / np.timedelta64(1, 's')
 print ("Training completed. total time used:", (np.datetime64("now") - starttime) / np.timedelta64(1, 's'))
 
@@ -101,3 +101,22 @@ with open(csv_path, mode='a', newline='') as file:
     writer.writerow(row)
 
 print(f"Result logged to: {csv_path}")
+
+import pandas as pd
+from datetime import datetime
+
+# Create log directory if not exists
+log_dir = os.path.join("result", "noisy_xor")
+os.makedirs(log_dir, exist_ok=True)
+
+# Generate timestamped filename
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+epoch_log_path = os.path.join(log_dir, f"epoch_log_{timestamp}.csv")
+
+# Save epoch accuracy log to CSV
+epoch_df = pd.DataFrame({
+    "epoch": np.arange(1, len(acc_log) + 1),
+    "accuracy": acc_log
+})
+epoch_df.to_csv(epoch_log_path, index=False)
+print(f"Epoch accuracy log saved to: {epoch_log_path}")
