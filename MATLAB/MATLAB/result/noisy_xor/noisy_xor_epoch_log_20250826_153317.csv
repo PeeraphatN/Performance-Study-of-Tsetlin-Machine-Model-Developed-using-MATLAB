@@ -1,4 +1,13 @@
-epoch,accuracy
+% T: 15
+% s: 3.90
+% clauses: 10
+% states: 100
+% epochs: 200
+% time: 69.1615
+
+% acc_test: 1.0000
+% acc_train: 0.6030
+
 1,0.5174
 2,0.5484
 3,0.5138

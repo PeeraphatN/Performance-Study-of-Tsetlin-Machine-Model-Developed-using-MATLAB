@@ -94,23 +94,27 @@ function NoisyXOR(varargin)
     acc_log = acc_log(:);
     epochs_col = (1:epochs)';
     log_table = table(epochs_col, acc_log, 'VariableNames', {'epoch', 'accuracy'});
-    writetable(log_table, epoch_log_path);
+    header_lines = {
+        sprintf("%% T: %d", T);
+        sprintf("%% s: %.2f", s);
+        sprintf("%% clauses: %d", number_of_clauses);
+        sprintf("%% states: %d", states);
+        sprintf("%% epochs: %d", epochs);
+        sprintf("%% time: %.4f\n", elapsed_time);
 
-    %% Save summary log (append mode like Python)
-    summary_path = fullfile(log_dir, "noisy_xor_result_log.csv");
-    file_exists = exist(summary_path, 'file');
+        sprintf("%% acc_test: %.4f", acc_test);
+        sprintf("%% acc_train: %.4f", acc_train);
 
-    summary_data = table(number_of_features, number_of_classes, T, s, number_of_clauses, ...
-        states, epochs, acc_test, acc_train, elapsed_time, ...
-        'VariableNames', {'number_of_features', 'number_of_classes', 'T', 's', ...
-        'number_of_clauses', 'number_of_states', 'epochs', ...
-        'Accuracy_on_test_data', 'Accuracy_on_training_data', 'Time'});
-
-    if file_exists
-        writetable(summary_data, summary_path, 'WriteMode', 'Append');
-    else
-        writetable(summary_data, summary_path);
+    };
+    fid = fopen(epoch_log_path, 'w');
+    for i = 1:length(header_lines)
+        fprintf(fid, '%s\n', header_lines{i});
     end
+    fclose(fid);
+
+    writetable(log_table, epoch_log_path, 'WriteMode', 'Append');
+
+    fprintf("Epoch-wise accuracy log saved to %s\n", epoch_log_path);
 
     %% ---------- Clean up PID ----------
     pause(1);
