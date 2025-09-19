@@ -25,8 +25,8 @@ states = args.states
 epochs = args.epochs
 
 # Loading of training and test data
-training_data = np.loadtxt(r"..\DataSet\XOR\Noisy\NoisyXORTrainingData.csv",delimiter=',').astype(dtype=np.int32)
-test_data = np.loadtxt(r"..\DataSet\XOR\Noisy\NoisyXORTestData.csv", delimiter=',').astype(dtype=np.int32)
+training_data = np.loadtxt(r"..\..\DataSet\XOR\Noisy\NoisyXORTrainingData.csv",delimiter=',').astype(dtype=np.int32)
+test_data = np.loadtxt(r"..\..\DataSet\XOR\Noisy\NoisyXORTestData.csv", delimiter=',').astype(dtype=np.int32)
 
 X_training = training_data[:,0:number_of_features] # Input features
 y_training = training_data[:,number_of_features] # Target value
