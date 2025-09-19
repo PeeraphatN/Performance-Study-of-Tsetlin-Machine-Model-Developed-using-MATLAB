@@ -66,53 +66,53 @@ print ("Prediction: x1 = 0, x2 = 1, ... -> y = ", tsetlin_machine.predict(np.arr
 print ("Prediction: x1 = 0, x2 = 0, ... -> y = ", tsetlin_machine.predict(np.array([0,0,1,1,1,0,1,1,1,0,0,0],dtype=np.int32)))
 print ("Prediction: x1 = 1, x2 = 1, ... -> y = ", tsetlin_machine.predict(np.array([1,1,1,1,1,0,1,1,1,0,0,0],dtype=np.int32)))
 
-# import os
-# import csv
+import os
+import csv
 
-# os.makedirs("result\\noisy_xor", exist_ok=True)
+os.makedirs("result\\noisy_xor_pure_python", exist_ok=True)
 
-# csv_path = os.path.join("result","noisy_xor","noisy_xor_result_log.csv")
+csv_path = os.path.join("result","noisy_xor_pure_python","noisy_xor_pure_python_result_log.csv")
 
-# test_acc = tsetlin_machine.evaluate(X_test, y_test, y_test.shape[0])
-# train_acc = tsetlin_machine.evaluate(X_training, y_training, y_training.shape[0])
+test_acc = tsetlin_machine.evaluate(X_test, y_test, y_test.shape[0])
+train_acc = tsetlin_machine.evaluate(X_training, y_training, y_training.shape[0])
 
-# row = {
-#     "number_of_features": number_of_features,
-#     "number_of_classes": number_of_classes,
-#     "T": T,
-#     "s": s,
-#     "number_of_clauses": number_of_clauses,
-#     "number_of_states": states,
-#     "epochs": epochs,
-#     "Accuracy on test data": round(test_acc, 4),
-#     "Accuracy on training data": round(train_acc, 4),
-#     "Time": duration
-# }
+row = {
+    "number_of_features": number_of_features,
+    "number_of_classes": number_of_classes,
+    "T": T,
+    "s": s,
+    "number_of_clauses": number_of_clauses,
+    "number_of_states": states,
+    "epochs": epochs,
+    "Accuracy on test data": round(test_acc, 4),
+    "Accuracy on training data": round(train_acc, 4),
+    "Time": duration
+}
 
-# file_exists = os.path.isfile(csv_path)
-# with open(csv_path, mode='a', newline='') as file:
-#     writer = csv.DictWriter(file, fieldnames=row.keys())
-#     if not file_exists:
-#         writer.writeheader()
-#     writer.writerow(row)
+file_exists = os.path.isfile(csv_path)
+with open(csv_path, mode='a', newline='') as file:
+    writer = csv.DictWriter(file, fieldnames=row.keys())
+    if not file_exists:
+        writer.writeheader()
+    writer.writerow(row)
 
-# print(f"Result logged to: {csv_path}")
+print(f"Result logged to: {csv_path}")
 
-# import pandas as pd
-# from datetime import datetime
+import pandas as pd
+from datetime import datetime
 
-# # Create log directory if not exists
-# log_dir = os.path.join("result", "noisy_xor")
-# os.makedirs(log_dir, exist_ok=True)
+# Create log directory if not exists
+log_dir = os.path.join("result", "noisy_xor_pure_python")
+os.makedirs(log_dir, exist_ok=True)
 
-# # Generate timestamped filename
-# timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-# epoch_log_path = os.path.join(log_dir, f"epoch_log_{timestamp}.csv")
+# Generate timestamped filename
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+epoch_log_path = os.path.join(log_dir, f"epoch_log_{timestamp}.csv")
 
-# # Save epoch accuracy log to CSV
-# epoch_df = pd.DataFrame({
-#     "epoch": np.arange(1, len(acc_log) + 1),
-#     "accuracy": acc_log
-# })
-# epoch_df.to_csv(epoch_log_path, index=False)
-# print(f"Epoch accuracy log saved to: {epoch_log_path}")
+# Save epoch accuracy log to CSV
+epoch_df = pd.DataFrame({
+    "epoch": np.arange(1, len(acc_log) + 1),
+    "accuracy": acc_log
+})
+epoch_df.to_csv(epoch_log_path, index=False)
+print(f"Epoch accuracy log saved to: {epoch_log_path}")
