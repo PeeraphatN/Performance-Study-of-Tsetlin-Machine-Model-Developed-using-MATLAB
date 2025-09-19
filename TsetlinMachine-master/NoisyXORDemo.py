@@ -29,8 +29,8 @@ states = args.states
 epochs = args.epochs
 
 # Loading of training and test data
-training_data = np.loadtxt(r"C:\Tsetlin Machine\Performance-Study-of-Tsetlin-Machine-Model-Developed-using-MATLAB\DataSet\XOR\Noisy\NoisyXORTrainingData.csv",delimiter=',').astype(dtype=np.int32)
-test_data = np.loadtxt(r"C:\Tsetlin Machine\Performance-Study-of-Tsetlin-Machine-Model-Developed-using-MATLAB\DataSet\XOR\Noisy\NoisyXORTestData.csv", delimiter=',').astype(dtype=np.int32)
+training_data = np.loadtxt(r"..\DataSet\XOR\Noisy\NoisyXORTrainingData.csv",delimiter=',').astype(dtype=np.int32)
+test_data = np.loadtxt(r"..\DataSet\XOR\Noisy\NoisyXORTestData.csv", delimiter=',').astype(dtype=np.int32)
 
 X_training = training_data[:,0:number_of_features] # Input features
 y_training = training_data[:,number_of_features] # Target value
@@ -42,7 +42,7 @@ y_test = test_data[:,number_of_features] # Target value
 tsetlin_machine = MultiClassTsetlinMachine.MultiClassTsetlinMachine(number_of_classes, number_of_clauses, number_of_features, states, s, T)
 
 # Training of the Tsetlin Machine in batch mode. The Tsetlin Machine can also be trained online
-print ("Training the Tsetlin Machine on MNIST data ...")
+print ("Training the Tsetlin Machine on NoisyXOR data ...")
 print ("Hyperparameters:")
 print ("Number of features:", number_of_features)
 print ("Number of classes:", number_of_classes)
