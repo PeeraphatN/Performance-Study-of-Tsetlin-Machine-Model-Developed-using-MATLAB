@@ -1,23 +1,19 @@
 import numpy as np
 import argparse
-import pyximport; pyximport.install(setup_args={
-                              "include_dirs":np.get_include()},
-                            reload_support=True)
-
-import MultiClassTsetlinMachine
+import MultiClassTsetlinMachinePurePython
 
 # --- Argument Parser ---
 parser = argparse.ArgumentParser()
 parser.add_argument("--T", type=int, default=15, help="Threshold (T)")
 parser.add_argument("--s", type=float, default=3.9, help="Sensitivity (s)")
-parser.add_argument("--clauses", type=int, default=500, help="Number of Clauses")
+parser.add_argument("--clauses", type=int,default=10 , help="Number of Clauses")
 parser.add_argument("--states", type=int, default=100, help="Number of States")
 parser.add_argument("--epochs", type=int, default=200, help="Number of Epochs")
 args = parser.parse_args()
 
 # Parameters of the pattern recognition problem
-number_of_features = 784
-number_of_classes = 10
+number_of_features = 12
+number_of_classes = 2
 
 # Parameters for the Tsetlin Machine
 T = args.T
@@ -30,15 +26,18 @@ epochs = args.epochs
 
 # Loading of training and test data
 training_data = np.loadtxt(r"..\DataSet\MNIST\MNISTTraining.txt").astype(dtype=np.int32)
-test_data = np.loadtxt(r"..\DataSet\MNIST\MNISTTest.txt").astype(dtype=np.int32)
+test_data = np.loadtxt(r"..\DataSet\MNIST\MNISTTraining.txt").astype(dtype=np.int32)
+
 X_training = training_data[:,0:number_of_features] # Input features
-y_training = training_data[:,number_of_features] # Class labels
+y_training = training_data[:,number_of_features] # Target value
 
 X_test = test_data[:,0:number_of_features] # Input features
-y_test = test_data[:,number_of_features] # Class labels
+y_test = test_data[:,number_of_features] # Target value
 
-tsetlin_machine = MultiClassTsetlinMachine.MultiClassTsetlinMachine(number_of_classes, number_of_clauses, number_of_features, states, s, T)
+# This is a multiclass variant of the Tsetlin Machine, capable of distinguishing between multiple classes
+tsetlin_machine = MultiClassTsetlinMachinePurePython.MultiClassTsetlinMachine(number_of_classes, number_of_clauses, number_of_features, states, s, T)
 
+# Training of the Tsetlin Machine in batch mode. The Tsetlin Machine can also be trained online
 print ("Training the Tsetlin Machine on MNIST data ...")
 print ("Hyperparameters:")
 print ("Number of features:", number_of_features)
@@ -54,8 +53,7 @@ print ("Number of test samples:", y_test.shape[0])
 starttime = np.datetime64("now")
 acc_log = tsetlin_machine.fit(X_training, y_training, y_training.shape[0], epochs=epochs)
 duration = (np.datetime64("now") - starttime) / np.timedelta64(1, 's')
-print ("Training completed. total time used:", duration)
-
+print ("Training completed. total time used:", (np.datetime64("now") - starttime) / np.timedelta64(1, 's'))
 
 print ("\nEvaluating the Tsetlin Machine on test and training data...\n")
 print ("Accuracy on test data:", tsetlin_machine.evaluate(X_test, y_test, y_test.shape[0]))
@@ -67,9 +65,9 @@ for i in range(20):
 import os
 import csv
 
-os.makedirs("result\\mnist", exist_ok=True)
+os.makedirs("result\\mnist_pure_python", exist_ok=True)
 
-csv_path = os.path.join("result","mnist","mnist_result_log.csv")
+csv_path = os.path.join("result","mnist_pure_python","mnist_pure_python_result_log.csv")
 
 test_acc = tsetlin_machine.evaluate(X_test, y_test, y_test.shape[0])
 train_acc = tsetlin_machine.evaluate(X_training, y_training, y_training.shape[0])
@@ -100,7 +98,7 @@ import pandas as pd
 from datetime import datetime
 
 # Create log directory if not exists
-log_dir = os.path.join("result", "mnist")
+log_dir = os.path.join("result", "mnist_pure_python")
 os.makedirs(log_dir, exist_ok=True)
 
 # Generate timestamped filename
