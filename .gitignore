@@ -1,0 +1,15 @@
+# Ignore result directories used across projects
+**/result/
+
+# Ignore generated result logs and epoch logs
+**/*result_log*.csv
+**/*epoch_log*.csv
+
+# Ignore Python build artifacts
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Ignore compiled extensions/build directories
+build/
+dist/
