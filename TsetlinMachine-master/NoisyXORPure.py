@@ -1,9 +1,5 @@
 import numpy as np
 import argparse
-import pyximport; pyximport.install(setup_args={
-                              "include_dirs":np.get_include()},
-                            reload_support=True)
-
 import MultiClassTsetlinMachinePurePython
 
 # --- Argument Parser ---
@@ -42,7 +38,7 @@ y_test = test_data[:,number_of_features] # Target value
 tsetlin_machine = MultiClassTsetlinMachinePurePython.MultiClassTsetlinMachine(number_of_classes, number_of_clauses, number_of_features, states, s, T)
 
 # Training of the Tsetlin Machine in batch mode. The Tsetlin Machine can also be trained online
-print ("Training the Tsetlin Machine on MNIST data ...")
+print ("Training the Tsetlin Machine on NoisyXOR data ...")
 print ("Hyperparameters:")
 print ("Number of features:", number_of_features)
 print ("Number of classes:", number_of_classes)
