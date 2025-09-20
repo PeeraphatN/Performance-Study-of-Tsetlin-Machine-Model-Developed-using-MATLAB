@@ -8,15 +8,15 @@ set "end=%3"
 
 REM ==== Check if arguments are missing ====
 if "%start%"=="" (
-    echo Usage: run_noisy_xor_dynamic.bat START STEP END
-    echo Example: run_noisy_xor_dynamic.bat 2 2 20
+    echo Usage: run_noisy_pure.bat START STEP END
+    echo Example: run_noisy_pure.bat 2 2 20
     exit /b
 )
 
 REM ==== Loop and run separate python instances ====
 for /L %%C in (%start%,%step%,%end%) do (
-    echo Running NoisyXOR.m with --clause %%C
-    start "Clause %%C" cmd /k matlab -batch "NoisyXOR('clause',%%C)"
+    echo Running NoisyXORPure.py with --clauses %%C
+    start "Clause %%C" cmd /k python NoisyXORPure.py --clauses %%C
 )
 
 echo All processes launched.
