@@ -116,6 +116,22 @@ function NoisyXOR(varargin)
 
     fprintf("Epoch-wise accuracy log saved to %s\n", epoch_log_path);
 
+    %% Save summary log (append mode)
+    summary_path = fullfile(log_dir, "noisyXOR_result_log.csv");
+    file_exists = exist(summary_path, 'file');
+
+    summary_data = table(number_of_features, number_of_classes, T, s, number_of_clauses, ...
+        states, epochs, acc_test, acc_train, elapsed_time, ...
+        'VariableNames', {'number_of_features', 'number_of_classes', 'T', 's', ...
+        'number_of_clauses', 'number_of_states', 'epochs', ...
+        'Accuracy_on_test_data', 'Accuracy_on_training_data', 'Time'});
+
+    if file_exists
+        writetable(summary_data, summary_path, 'WriteMode', 'Append');
+    else
+        writetable(summary_data, summary_path);
+    end
+
     %% ---------- Clean up PID ----------
     pause(1);
     if exist('C:\temp\training_pid.txt', 'file')
