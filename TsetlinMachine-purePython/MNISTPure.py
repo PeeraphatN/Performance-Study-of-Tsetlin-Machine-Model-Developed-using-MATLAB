@@ -26,7 +26,7 @@ epochs = args.epochs
 
 # Loading of training and test data
 training_data = np.loadtxt(r"..\DataSet\MNIST\MNISTTraining.txt").astype(dtype=np.int32)
-test_data = np.loadtxt(r"..\DataSet\MNIST\MNISTTraining.txt").astype(dtype=np.int32)
+test_data = np.loadtxt(r"..\DataSet\MNIST\MNISTTest.txt").astype(dtype=np.int32)
 
 X_training = training_data[:,0:number_of_features] # Input features
 y_training = training_data[:,number_of_features] # Target value
