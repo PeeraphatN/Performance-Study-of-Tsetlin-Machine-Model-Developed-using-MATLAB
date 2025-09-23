@@ -1,8 +1,19 @@
-import numpy as np
 import argparse
-import pyximport; pyximport.install(setup_args={
-                              "include_dirs":np.get_include()},
-                            reload_support=True)
+from pathlib import Path
+
+import numpy as np
+
+import pyximport
+
+BASE_DIR = Path(__file__).resolve().parent
+PYX_BUILD_DIR = BASE_DIR / "pyxbld"
+PYX_BUILD_DIR.mkdir(parents=True, exist_ok=True)
+
+pyximport.install(
+    setup_args={"include_dirs": np.get_include()},
+    build_dir=str(PYX_BUILD_DIR),
+    reload_support=True,
+)
 
 import MultiClassTsetlinMachine
 
@@ -29,8 +40,12 @@ states = args.states
 epochs = args.epochs
 
 # Loading of training and test data
-training_data = np.loadtxt(r"..\DataSet\XOR\Noisy\NoisyXORTrainingData.csv",delimiter=',').astype(dtype=np.int32)
-test_data = np.loadtxt(r"..\DataSet\XOR\Noisy\NoisyXORTestData.csv", delimiter=',').astype(dtype=np.int32)
+data_dir = BASE_DIR.parent / "DataSet" / "XOR" / "Noisy"
+training_data_path = data_dir / "NoisyXORTrainingData.csv"
+test_data_path = data_dir / "NoisyXORTestData.csv"
+
+training_data = np.loadtxt(training_data_path, delimiter=',').astype(dtype=np.int32)
+test_data = np.loadtxt(test_data_path, delimiter=',').astype(dtype=np.int32)
 
 X_training = training_data[:,0:number_of_features] # Input features
 y_training = training_data[:,number_of_features] # Target value
@@ -70,12 +85,12 @@ print ("Prediction: x1 = 0, x2 = 1, ... -> y = ", tsetlin_machine.predict(np.arr
 print ("Prediction: x1 = 0, x2 = 0, ... -> y = ", tsetlin_machine.predict(np.array([0,0,1,1,1,0,1,1,1,0,0,0],dtype=np.int32)))
 print ("Prediction: x1 = 1, x2 = 1, ... -> y = ", tsetlin_machine.predict(np.array([1,1,1,1,1,0,1,1,1,0,0,0],dtype=np.int32)))
 
-import os
 import csv
 
-os.makedirs("result\\noisy_xor", exist_ok=True)
+result_dir = BASE_DIR / "result" / "noisy_xor"
+result_dir.mkdir(parents=True, exist_ok=True)
 
-csv_path = os.path.join("result","noisy_xor","noisy_xor_result_log.csv")
+csv_path = result_dir / "noisy_xor_result_log.csv"
 
 test_acc = tsetlin_machine.evaluate(X_test, y_test, y_test.shape[0])
 train_acc = tsetlin_machine.evaluate(X_training, y_training, y_training.shape[0])
@@ -93,8 +108,8 @@ row = {
     "Time": duration
 }
 
-file_exists = os.path.isfile(csv_path)
-with open(csv_path, mode='a', newline='') as file:
+file_exists = csv_path.exists()
+with csv_path.open(mode='a', newline='') as file:
     writer = csv.DictWriter(file, fieldnames=row.keys())
     if not file_exists:
         writer.writeheader()
@@ -106,12 +121,11 @@ import pandas as pd
 from datetime import datetime
 
 # Create log directory if not exists
-log_dir = os.path.join("result", "noisy_xor")
-os.makedirs(log_dir, exist_ok=True)
+log_dir = result_dir
 
 # Generate timestamped filename
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-epoch_log_path = os.path.join(log_dir, f"epoch_log_{timestamp}.csv")
+epoch_log_path = log_dir / f"epoch_log_{timestamp}.csv"
 
 # Save epoch accuracy log to CSV
 epoch_df = pd.DataFrame({

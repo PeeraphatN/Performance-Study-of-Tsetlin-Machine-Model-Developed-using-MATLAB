@@ -345,7 +345,7 @@ cdef class MultiClassTsetlinMachine:
 		cdef int example_id
 		cdef int[:] Xi
 		cdef int target_class
-		cdef long[:] random_index
+		cdef int[:] random_index
 
 		Xi = np.zeros((self.number_of_features,), dtype=np.int32)
 		random_index = np.arange((number_of_examples),dtype=np.int32)
