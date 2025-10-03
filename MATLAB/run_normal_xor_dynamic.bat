@@ -8,8 +8,8 @@ set "end=%3"
 
 REM ==== Check if arguments are missing and validate step ====
 if "%start%"=="" (
-    echo Usage: run_mnist_dynamic.bat START STEP END
-    echo Example: run_mnist_dynamic.bat 100 100 1000
+    echo Usage: run_normal_xor_dynamic.bat START STEP END
+    echo Example: run_normal_xor_dynamic.bat 2 2 20
     exit /b
 )
 
@@ -24,10 +24,10 @@ if "%step%"=="0" (
     exit /b 1
 )
 
-REM ==== Loop and run separate python instances ====
+REM ==== Loop and run separate MATLAB instances ====
 for /L %%C in (%start%,%step%,%end%) do (
-    echo Running MNIST.m with --clause %%C
-    start "Clause %%C" cmd /k matlab -batch "MNIST('clause',%%C)"
+    echo Running NormalXOR.m with --clauses %%C
+    start "Clause %%C" cmd /k matlab -batch "NormalXOR('clauses',%%C)"
 )
 
 echo All processes launched.
