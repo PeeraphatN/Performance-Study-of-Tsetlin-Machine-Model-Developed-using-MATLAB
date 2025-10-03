@@ -55,7 +55,7 @@ print("Number of test samples:", y_test.shape[0])
 starttime = np.datetime64("now")
 acc_log = tsetlin_machine.fit(X_training, y_training, y_training.shape[0], epochs=epochs)
 duration = (np.datetime64("now") - starttime) / np.timedelta64(1, 's')
-print("\nTraining the Tsetlin Machine on Normal XOR data ...")
+print(f"\nTraining completed. Total time used: {duration:.4f} seconds")
 
 print("\nEvaluating the Tsetlin Machine on test and training data...\n\n")
 print("Accuracy on test data:", tsetlin_machine.evaluate(X_test, y_test, y_test.shape[0]))
@@ -86,6 +86,7 @@ row = {
     "epochs": epochs,
     "Accuracy on test data": round(test_acc, 4),
     "Accuracy on training data": round(train_acc, 4),
+    "Time": round(float(duration), 4),
 }
 
 file_exists = os.path.isfile(csv_path)
