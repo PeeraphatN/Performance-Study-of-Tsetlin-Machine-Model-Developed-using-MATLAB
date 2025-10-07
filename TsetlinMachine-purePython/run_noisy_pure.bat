@@ -6,11 +6,22 @@ set "start=%1"
 set "step=%2"
 set "end=%3"
 
-REM ==== Check if arguments are missing ====
+REM ==== Check if arguments are missing and validate step ====
 if "%start%"=="" (
     echo Usage: run_noisy_pure.bat START STEP END
     echo Example: run_noisy_pure.bat 2 2 20
     exit /b
+)
+
+REM Ensure step is provided; default to 1 if empty
+if "%step%"=="" (
+    set "step=1"
+)
+
+REM Prevent infinite loop: step must not be zero
+if "%step%"=="0" (
+    echo ERROR: STEP must not be 0.
+    exit /b 1
 )
 
 REM ==== Loop and run separate python instances ====

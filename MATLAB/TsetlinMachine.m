@@ -317,10 +317,15 @@ classdef TsetlinMachine < handle
     end
 
     function [obj, acc_log] = fit(obj, X, y, epochs)
+        num_samples = size(X, 1);
         acc_log = zeros(epochs, 1);
         for e = 1:epochs
-            for i = 1:size(X, 1)
-                obj = obj.update(X(i, :), y(i) + 1);
+
+            order = randperm(num_samples);
+            for i = 1:num_samples
+                xi = X(order(i), :);
+                yi = y(order(i)) + 1; % MATLAB index starts at 1
+                obj = obj.update(xi, yi);
             end
             acc_log(e) = obj.evaluate(X, y); % <-- เก็บ accuracy ทุก epoch
         end

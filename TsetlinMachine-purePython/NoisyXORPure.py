@@ -8,7 +8,7 @@ parser.add_argument("--T", type=int, default=15, help="Threshold (T)")
 parser.add_argument("--s", type=float, default=3.9, help="Sensitivity (s)")
 parser.add_argument("--clauses", type=int,default=10 , help="Number of Clauses")
 parser.add_argument("--states", type=int, default=100, help="Number of States")
-parser.add_argument("--epochs", type=int, default=200, help="Number of Epochs")
+parser.add_argument("--epochs", type=int, default=500, help="Number of Epochs")
 args = parser.parse_args()
 
 # Parameters of the pattern recognition problem

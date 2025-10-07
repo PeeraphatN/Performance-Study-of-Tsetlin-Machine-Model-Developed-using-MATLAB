@@ -1,4 +1,4 @@
-function NoisyXOR(varargin)
+function NormalXOR(varargin)
     %% ---------- PID Detection ----------
     pid = feature('getpid'); 
     fid = fopen('C:\temp\training_pid.txt', 'w'); 
@@ -26,12 +26,12 @@ function NoisyXOR(varargin)
     %% ---------------------------------------
 
     %% Problem configuration
-    number_of_features = 12;
+    number_of_features = 2;
     number_of_classes = 2;
 
     %% Load dataset
-    training_data = load("..\DataSet\XOR\Noisy\NoisyXORTrainingData.txt");
-    test_data = load("..\DataSet\XOR\Noisy\NoisyXORTestData.txt");
+    training_data = load("..\DataSet\XOR\Normal\NormalXORTrainingData.txt");
+    test_data = load("..\DataSet\XOR\Normal\NormalXORTestData.txt");
 
     X_training = training_data(:, 1:number_of_features);
     y_training = training_data(:, number_of_features + 1);
@@ -43,7 +43,7 @@ function NoisyXOR(varargin)
     tsetlin_machine = TsetlinMachine(number_of_classes, number_of_clauses, number_of_features, states, s, T);
 
     %% Print configuration
-    fprintf("Training the Tsetlin Machine on Noisy XOR data ...\n");
+    fprintf("Training the Tsetlin Machine on Normal XOR data ...\n");
     fprintf("Hyperparameters:\n");
     fprintf("Number of features: %d\n", number_of_features);
     fprintf("Number of classes: %d\n", number_of_classes);
@@ -71,10 +71,10 @@ function NoisyXOR(varargin)
     fprintf("Accuracy on training data: %.4f\n", acc_train);
 
     %% Prediction samples
-    sample1 = [1,0,1,1,1,0,1,1,1,0,0,0];
-    sample2 = [0,1,1,1,1,0,1,1,1,0,0,0];
-    sample3 = [0,0,1,1,1,0,1,1,1,0,0,0];
-    sample4 = [1,1,1,1,1,0,1,1,1,0,0,0];
+    sample1 = [1,0];
+    sample2 = [0,1];
+    sample3 = [0,0];
+    sample4 = [1,1];
 
     fprintf('Prediction: x1 = 1, x2 = 0 -> y = %d\n', tsetlin_machine.predict(sample1));
     fprintf('Prediction: x1 = 0, x2 = 1 -> y = %d\n', tsetlin_machine.predict(sample2));
@@ -82,14 +82,14 @@ function NoisyXOR(varargin)
     fprintf('Prediction: x1 = 1, x2 = 1 -> y = %d\n', tsetlin_machine.predict(sample4));
 
     %% Create result folder
-    log_dir = fullfile("MATLAB", "result", "noisy_xor");
+    log_dir = fullfile("MATLAB", "result", "normal_xor");
     if ~exist(log_dir, 'dir')
         mkdir(log_dir);
     end
 
     %% Save epoch-wise accuracy log
     timestamp = datestr(now, "yyyymmdd_HHMMSS");
-    epoch_log_path = fullfile(log_dir, sprintf("noisy_xor_epoch_log_%s.csv", timestamp));
+    epoch_log_path = fullfile(log_dir, sprintf("normal_xor_epoch_log_%s.csv", timestamp));
 
     acc_log = acc_log(:);
     epochs_col = (1:epochs)';
@@ -117,7 +117,7 @@ function NoisyXOR(varargin)
     fprintf("Epoch-wise accuracy log saved to %s\n", epoch_log_path);
 
     %% Save summary log (append mode)
-    summary_path = fullfile(log_dir, "noisyXOR_result_log.csv");
+    summary_path = fullfile(log_dir, "normalXOR_result_log.csv");
     file_exists = exist(summary_path, 'file');
 
     summary_data = table(number_of_features, number_of_classes, T, s, number_of_clauses, ...
