@@ -1,12 +1,13 @@
 import numpy as np
 import argparse
+from pathlib import Path
 import MultiClassTsetlinMachinePurePython
 
 # --- Argument Parser ---
 parser = argparse.ArgumentParser()
 parser.add_argument("--T", type=int, default=15, help="Threshold (T)")
 parser.add_argument("--s", type=float, default=3.9, help="Sensitivity (s)")
-parser.add_argument("--clauses", type=int,default=100 , help="Number of Clauses")
+parser.add_argument("--clauses", type=int, default=100, help="Number of Clauses")
 parser.add_argument("--states", type=int, default=100, help="Number of States")
 parser.add_argument("--epochs", type=int, default=200, help="Number of Epochs")
 args = parser.parse_args()
@@ -25,49 +26,60 @@ states = args.states
 epochs = args.epochs
 
 # Loading of training and test data
-training_data = np.loadtxt(r"..\DataSet\MNIST\MNISTTraining.txt").astype(dtype=np.int32)
-test_data = np.loadtxt(r"..\DataSet\MNIST\MNISTTest.txt").astype(dtype=np.int32)
+BASE_DIR = Path(__file__).resolve().parent
+data_dir = BASE_DIR.parent / "DataSet" / "MNIST"
+training_data = np.loadtxt(data_dir / "MNISTTraining.txt").astype(dtype=np.int32)
+test_data = np.loadtxt(data_dir / "MNISTTest.txt").astype(dtype=np.int32)
 
-X_training = training_data[:,0:number_of_features] # Input features
-y_training = training_data[:,number_of_features] # Target value
+X_training = training_data[:, 0:number_of_features]  # Input features
+y_training = training_data[:, number_of_features]  # Target value
 
-X_test = test_data[:,0:number_of_features] # Input features
-y_test = test_data[:,number_of_features] # Target value
+X_test = test_data[:, 0:number_of_features]  # Input features
+y_test = test_data[:, number_of_features]  # Target value
 
 # This is a multiclass variant of the Tsetlin Machine, capable of distinguishing between multiple classes
-tsetlin_machine = MultiClassTsetlinMachinePurePython.MultiClassTsetlinMachine(number_of_classes, number_of_clauses, number_of_features, states, s, T)
+tsetlin_machine = MultiClassTsetlinMachinePurePython.MultiClassTsetlinMachine(
+    number_of_classes, number_of_clauses, number_of_features, states, s, T
+)
 
 # Training of the Tsetlin Machine in batch mode. The Tsetlin Machine can also be trained online
-print ("Training the Tsetlin Machine on MNIST data ...")
-print ("Hyperparameters:")
-print ("Number of features:", number_of_features)
-print ("Number of classes:", number_of_classes)
-print ("T:", T)
-print ("s:", s)
-print ("Number of clauses:", number_of_clauses)
-print ("Number of states:", states)
-print ("epochs:", epochs)
-print ("Number of training samples:", y_training.shape[0])
-print ("Number of test samples:", y_test.shape[0])
+print("Training the Tsetlin Machine on MNIST data ...")
+print("Hyperparameters:")
+print("Number of features:", number_of_features)
+print("Number of classes:", number_of_classes)
+print("T:", T)
+print("s:", s)
+print("Number of clauses:", number_of_clauses)
+print("Number of states:", states)
+print("epochs:", epochs)
+print("Number of training samples:", y_training.shape[0])
+print("Number of test samples:", y_test.shape[0])
 
 starttime = np.datetime64("now")
-acc_log = tsetlin_machine.fit(X_training, y_training, y_training.shape[0], epochs=epochs)
-duration = (np.datetime64("now") - starttime) / np.timedelta64(1, 's')
-print ("Training completed. total time used:", (np.datetime64("now") - starttime) / np.timedelta64(1, 's'))
+acc_log = tsetlin_machine.fit(
+    X_training, y_training, y_training.shape[0], epochs=epochs
+)
+duration = (np.datetime64("now") - starttime) / np.timedelta64(1, "s")
+print("Training completed. total time used:", (np.datetime64("now") - starttime) / np.timedelta64(1, "s"))
 
-print ("\nEvaluating the Tsetlin Machine on test and training data...\n")
-print ("Accuracy on test data:", tsetlin_machine.evaluate(X_test, y_test, y_test.shape[0]))
-print ("Accuracy on training data:", tsetlin_machine.evaluate(X_training, y_training, y_training.shape[0]))
-print ("\nPredictions for first 20 test samples:")
+print("\nEvaluating the Tsetlin Machine on test and training data\n")
+print("Accuracy on test data:", tsetlin_machine.evaluate(X_test, y_test, y_test.shape[0]))
+print(
+    "Accuracy on training data:",
+    tsetlin_machine.evaluate(X_training, y_training, y_training.shape[0]),
+)
+print("\nPredictions for first 20 test samples:")
 for i in range(20):
-    print(f"Sample {i+1}: Predicted class = {tsetlin_machine.predict(X_test[i])}, True class = {y_test[i]}")
+    print(
+        f"Sample {i+1}: Predicted class = {tsetlin_machine.predict(X_test[i])}, True class = {y_test[i]}"
+    )
 
-import os
 import csv
 
-os.makedirs("result\\mnist_pure_python", exist_ok=True)
+result_dir = BASE_DIR / "result" / "mnist_pure_python"
+result_dir.mkdir(parents=True, exist_ok=True)
 
-csv_path = os.path.join("result","mnist_pure_python","mnist_pure_python_result_log.csv")
+csv_path = result_dir / "mnist_pure_python_result_log.csv"
 
 test_acc = tsetlin_machine.evaluate(X_test, y_test, y_test.shape[0])
 train_acc = tsetlin_machine.evaluate(X_training, y_training, y_training.shape[0])
@@ -82,11 +94,11 @@ row = {
     "epochs": epochs,
     "Accuracy on test data": round(test_acc, 4),
     "Accuracy on training data": round(train_acc, 4),
-    "Time": duration
+    "Time": duration,
 }
 
-file_exists = os.path.isfile(csv_path)
-with open(csv_path, mode='a', newline='') as file:
+file_exists = csv_path.exists()
+with csv_path.open(mode='a', newline='') as file:
     writer = csv.DictWriter(file, fieldnames=row.keys())
     if not file_exists:
         writer.writeheader()
@@ -98,17 +110,17 @@ import pandas as pd
 from datetime import datetime
 
 # Create log directory if not exists
-log_dir = os.path.join("result", "mnist_pure_python")
-os.makedirs(log_dir, exist_ok=True)
+log_dir = result_dir
 
 # Generate timestamped filename
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-epoch_log_path = os.path.join(log_dir, f"epoch_log_{timestamp}.csv")
+epoch_log_path = log_dir / f"epoch_log_{timestamp}.csv"
 
 # Save epoch accuracy log to CSV
 epoch_df = pd.DataFrame({
     "epoch": np.arange(1, len(acc_log) + 1),
-    "accuracy": acc_log
+    "accuracy": acc_log,
 })
 epoch_df.to_csv(epoch_log_path, index=False)
 print(f"Epoch accuracy log saved to: {epoch_log_path}")
+
