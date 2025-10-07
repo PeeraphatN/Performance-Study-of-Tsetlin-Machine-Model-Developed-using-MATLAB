@@ -412,6 +412,43 @@ def plot_dataset(dataset, agg='mean', marker_step=10, metric='clauses_per_second
         fig4.savefig(outpath4)
         print(f"Saved plot: {outpath4}")
 
+    # Time vs number_of_clauses per method (aggregate time by clauses)
+    time_methods = []
+    time_series = {}
+    for method, (s, e_dfs) in data.items():
+        if isinstance(s, pd.DataFrame) and not s.empty and 'number_of_clauses' in s.columns and any(k in s.columns for k in ['Time', 'time', 'Duration']):
+            time_col = None
+            for key in ['Time', 'time', 'Duration']:
+                if key in s.columns:
+                    time_col = key
+                    break
+            if time_col is None:
+                continue
+            df_mt = s[['number_of_clauses', time_col]].copy()
+            df_mt['number_of_clauses'] = pd.to_numeric(df_mt['number_of_clauses'], errors='coerce')
+            df_mt[time_col] = pd.to_numeric(df_mt[time_col], errors='coerce')
+            df_mt = df_mt.dropna()
+            if df_mt.empty:
+                continue
+            grp = df_mt.groupby('number_of_clauses')[time_col]
+            agg_grp = grp.median() if agg == 'median' else grp.mean()
+            agg_grp = agg_grp.sort_index()
+            time_methods.append(method)
+            time_series[method] = agg_grp
+    if time_methods:
+        fig5, ax5 = plt.subplots(figsize=(8, 5))
+        for method in time_methods:
+            ser = time_series[method]
+            ax5.plot(ser.index, ser.values, marker='o', linestyle='-', label=method)
+        ax5.set_xlabel('Number of clauses')
+        ax5.set_ylabel('Time (s)')
+        ax5.set_title(f'{dataset}: Time vs number_of_clauses')
+        ax5.legend()
+        outpath5 = os.path.join(dataset_plots_dir, f"{dataset}_time_vs_clauses.png")
+        fig5.tight_layout()
+        fig5.savefig(outpath5)
+        print(f"Saved plot: {outpath5}")
+
 
 def main():
     parser = argparse.ArgumentParser()
