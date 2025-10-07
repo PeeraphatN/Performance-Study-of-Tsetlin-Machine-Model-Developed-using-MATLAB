@@ -15,7 +15,7 @@ function NormalXOR(varargin)
     addParameter(p, 's', 3.9, @isnumeric);
     addParameter(p, 'clauses', 10, @isnumeric);
     addParameter(p, 'states', 100, @isnumeric);
-    addParameter(p, 'epochs', 200, @isnumeric);
+    addParameter(p, 'epochs', 500, @isnumeric);
     parse(p, varargin{:});
 
     T = p.Results.T;
