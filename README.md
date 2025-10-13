@@ -3,16 +3,21 @@
 This repository contains MATLAB and Python implementations / demos of the Tsetlin Machine, example datasets, and conveniences (batch scripts) to run experiments across ranges of hyperparameters.
 
 ## Layout (important files/folders)
-- `DataSet/` — datasets used by the demos (MNIST, XOR variants).
-- `MATLAB/` — MATLAB implementations and scripts (`MNIST.m`, `NoisyXOR.m`, `NormalXOR.m`) and batch runners.
-- `TsetlinMachine-master/` — Python/C demo using the compiled/extension implementation (demos: `MNISTDemo.py`, `NoisyXORDemo.py`).
-- `TsetlinMachine-purePython/` — pure-Python demos (`MNISTPure.py`, `NoisyXORPure.py`, `NormalXORPure.py`) and helper batch files.
-- `result/` and `*/result/` — experiment outputs and CSV logs (many are intentionally ignored by `.gitignore`).
+- `DataSet/` - datasets used by the demos (MNIST, XOR variants).
+- `MATLAB/` - MATLAB implementations and scripts (`MNIST.m`, `NoisyXOR.m`, `NormalXOR.m`) and batch runners.
+- `TsetlinMachine-master/` - Python/C demo using the compiled/extension implementation (demos: `MNISTDemo.py`, `NoisyXORDemo.py`).
+- `TsetlinMachine-purePython/` - pure-Python demos (`MNISTPure.py`, `NoisyXORPure.py`, `NormalXORPure.py`) and helper batch files.
+- `result/` and `*/result/` - experiment outputs and CSV logs (many are intentionally ignored by `.gitignore`).
 
 ## Quick goals
 - Train and evaluate the Tsetlin Machine on datasets (MNIST, XOR variants).
 - Produce per-epoch logs (CSV) and summary CSVs in `result/` folders.
 - Provide batch scripts to run experiments across hyperparameter ranges.
+
+## What's New (October 2025)
+- Added `plot_results_all.py` to auto-build comparison plots from MATLAB and pure-Python result logs.
+- Clause throughput charts now default to `clauses_per_second` and write `*_clauses_per_second.png`.
+- Aggregate accuracy and time charts land in `result/plots/` to compare MATLAB vs pure Python across datasets.
 
 ## Running demos
 
@@ -22,7 +27,7 @@ Notes: examples below use PowerShell on Windows. Adjust `python` to a full path 
 Run a single demo from the `TsetlinMachine-master` folder:
 
 ```powershell
-cd "c:\Tsetlin Machine\Performance-Study-of-Tsetlin-Machine-Model-Developed-using-MATLAB\TsetlinMachine-master"
+cd "c:\\Tsetlin Machine\\Performance-Study-of-Tsetlin-Machine-Model-Developed-using-MATLAB\\TsetlinMachine-master"
 python MNISTDemo.py --clauses 100
 python NoisyXORDemo.py --clauses 10
 ```
@@ -44,7 +49,7 @@ Examples:
 From the `MATLAB` folder you can run the MATLAB scripts directly (or use the batch runners that launch MATLAB instances):
 
 ```powershell
-cd "c:\Tsetlin Machine\Performance-Study-of-Tsetlin-Machine-Model-Developed-using-MATLAB\MATLAB"
+cd "c:\\Tsetlin Machine\\Performance-Study-of-Tsetlin-Machine-Model-Developed-using-MATLAB\\MATLAB"
 matlab -batch "MNIST('clauses',100)"
 matlab -batch "NoisyXOR('clauses',10)"
 matlab -batch "NormalXOR('clauses',10)"
@@ -64,7 +69,7 @@ Important: the batch scripts validate `STEP` to avoid infinite loops; `STEP` mus
 From the `TsetlinMachine-purePython` folder you can run the pure Python demos. Some batch files there launch the corresponding demos from `TsetlinMachine-master` instead (so the C-extension is used):
 
 ```powershell
-cd "...\TsetlinMachine-purePython"
+cd "...\\TsetlinMachine-purePython"
 python MNISTPure.py --clauses 100
 python NoisyXORPure.py --clauses 10
 .\run_mnist_pure.bat START STEP END   # launches MNISTDemo.py in the master folder
@@ -81,6 +86,11 @@ git rm --cached path\to\result\file.csv
 git commit -m "Remove tracked result logs"
 ```
 
+## Plotting results
+- Run `python plot_results_all.py` from the repo root to refresh dataset comparison figures in `result/<dataset>/plots/`.
+- Switch throughput charts with `--metric seconds_per_clause` or keep the new default `clauses_per_second`.
+- Tune aggregation with `--agg median` and dense epoch markers via `--marker-step 0` when you want every point.
+
 ## Adding training time to logs
 Some scripts now include a `Time` column in their summary CSVs. If a script doesn't include it yet, you can add a duration field in the script right after training finishes. Example (Python):
 
@@ -92,13 +102,12 @@ row['Time'] = round(float(duration), 4)
 ```
 
 ## Safety & notes
-- Batch scripts that launch many processes will consume system resources — run with care and monitor CPU/memory.
+- Batch scripts that launch many processes will consume system resources - run with care and monitor CPU/memory.
 - If you want PowerShell-native runner scripts (jobs/background) instead of `start cmd /k`, say so and I can add them.
 
 ## Where to find help
-- If you want me to add a plotting helper (MATLAB script) to summarize result logs into graphs, tell me which folder you want the script saved to (for example `MATLAB/result/mnist`) and I'll add it.
+- Ask for tweaks to `plot_results_all.py` if you need additional plots or alternate aggregations saved alongside the current ones.
 - If you want me to standardize `Time` logging across all scripts, I can make that change in a single commit.
 
 ---
-Generated on: 2025-10-06
-"# Performance-Study-of-Tsetlin-Machine-Model-Developed-using-MATLAB" 
+Generated on: 2025-10-12

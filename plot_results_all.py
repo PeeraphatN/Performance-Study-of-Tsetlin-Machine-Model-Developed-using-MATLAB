@@ -21,6 +21,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
 import argparse
+from matplotlib.ticker import MaxNLocator
 
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -173,6 +174,7 @@ def plot_dataset(dataset, agg='mean', marker_step=10, metric='clauses_per_second
 
     # Accuracy per epoch (top-left) - aggregate across runs
     ax = axs[0, 0]
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     plotted = 0
     for method, (s, e_dfs) in data.items():
         if e_dfs:
@@ -349,6 +351,7 @@ def plot_dataset(dataset, agg='mean', marker_step=10, metric='clauses_per_second
             clause_series[method] = agg_grp
     if clause_methods:
         fig3, ax3 = plt.subplots(figsize=(8, 5))
+        ax3.xaxis.set_major_locator(MaxNLocator(integer=True))
         for method in clause_methods:
             ser = clause_series[method]
             ax3.plot(ser.index, ser.values, marker='o', linestyle='-', label=method)
@@ -393,14 +396,15 @@ def plot_dataset(dataset, agg='mean', marker_step=10, metric='clauses_per_second
             metric_series[method] = grp_val
     if metric_methods:
         fig4, ax4 = plt.subplots(figsize=(8, 5))
+        ax4.xaxis.set_major_locator(MaxNLocator(integer=True))
         for method in metric_methods:
             ser = metric_series[method]
             ax4.plot(ser.index, ser.values, marker='o', linestyle='-', label=method)
         ax4.set_xlabel('Number of clauses')
         if metric == 'clauses_per_second':
             ax4.set_ylabel('Clauses per second (clauses / s)')
-            title_metric = 'Clauses per time'
-            out_fname = f"{dataset}_clauses_per_time.png"
+            title_metric = 'Clauses per second'
+            out_fname = f"{dataset}_clauses_per_second.png"
         else:
             ax4.set_ylabel('Seconds per clause (s)')
             title_metric = 'Seconds per clause'
@@ -437,6 +441,7 @@ def plot_dataset(dataset, agg='mean', marker_step=10, metric='clauses_per_second
             time_series[method] = agg_grp
     if time_methods:
         fig5, ax5 = plt.subplots(figsize=(8, 5))
+        ax5.xaxis.set_major_locator(MaxNLocator(integer=True))
         for method in time_methods:
             ser = time_series[method]
             ax5.plot(ser.index, ser.values, marker='o', linestyle='-', label=method)
