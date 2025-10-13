@@ -1,113 +1,108 @@
-# Performance Study of Tsetlin Machine Model (MATLAB + Python)
+# How to Use: Tsetlin Machine Demos (MATLAB + Python)
 
-This repository contains MATLAB and Python implementations / demos of the Tsetlin Machine, example datasets, and conveniences (batch scripts) to run experiments across ranges of hyperparameters.
+This repo provides ready-to-run demos of the Tsetlin Machine in MATLAB and Python. Use it to train on MNIST and XOR variants, log results, and generate comparison plots.
 
-## Layout (important files/folders)
-- `DataSet/` - datasets used by the demos (MNIST, XOR variants).
-- `MATLAB/` - MATLAB implementations and scripts (`MNIST.m`, `NoisyXOR.m`, `NormalXOR.m`) and batch runners.
-- `TsetlinMachine-master/` - Python/C demo using the compiled/extension implementation (demos: `MNISTDemo.py`, `NoisyXORDemo.py`).
-- `TsetlinMachine-purePython/` - pure-Python demos (`MNISTPure.py`, `NoisyXORPure.py`, `NormalXORPure.py`) and helper batch files.
-- `result/` and `*/result/` - experiment outputs and CSV logs (many are intentionally ignored by `.gitignore`).
+## Prerequisites
+- MATLAB R2019b+ with `-batch` support (for CLI runs)
+- Python 3.8+ with `pip`
+- Recommended packages: `numpy`, `pandas`, `matplotlib`
 
-## Quick goals
-- Train and evaluate the Tsetlin Machine on datasets (MNIST, XOR variants).
-- Produce per-epoch logs (CSV) and summary CSVs in `result/` folders.
-- Provide batch scripts to run experiments across hyperparameter ranges.
+Install Python deps (if needed):
+```
+pip install -r requirements.txt  # if present
+pip install numpy pandas matplotlib
+```
 
-## What's New (October 2025)
-- Added `plot_results_all.py` to auto-build comparison plots from MATLAB and pure-Python result logs.
-- Clause throughput charts now default to `clauses_per_second` and write `*_clauses_per_second.png`.
-- Aggregate accuracy and time charts land in `result/plots/` to compare MATLAB vs pure Python across datasets.
+## Repo Layout
+- `DataSet/` sample datasets (MNIST, XOR variants)
+- `MATLAB/` MATLAB demos: `MNIST.m`, `NoisyXOR.m`, `NormalXOR.m` (+ batch runners)
+- `TsetlinMachine-master/` Python/C demos: `MNISTDemo.py`, `NoisyXORDemo.py`
+- `TsetlinMachine-purePython/` Pure-Python demos: `MNISTPure.py`, `NoisyXORPure.py`, `NormalXORPure.py`
+- `result/` experiment outputs, logs, and plots
 
-## Running demos
-
-Notes: examples below use PowerShell on Windows. Adjust `python` to a full path if you use a virtualenv.
-
-### Python (TsetlinMachine-master)
-Run a single demo from the `TsetlinMachine-master` folder:
-
-```powershell
-cd "c:\\Tsetlin Machine\\Performance-Study-of-Tsetlin-Machine-Model-Developed-using-MATLAB\\TsetlinMachine-master"
+## Quick Start (most users)
+1) Run a small XOR demo in Python (fast sanity check):
+```
+cd TsetlinMachine-purePython
+python NoisyXORPure.py --clauses 10
+```
+2) Run MNIST in Python (C-extension demo):
+```
+cd TsetlinMachine-master
 python MNISTDemo.py --clauses 100
-python NoisyXORDemo.py --clauses 10
 ```
-
-Dynamic batch runner (launch many runs over a clause range):
-
-```powershell
-.\run_mnist_dynamic.bat START STEP END
-.\run_noisy_dynamic.bat START STEP END
+3) Plot results (from repo root):
 ```
-
-Examples:
-```powershell
-.\run_mnist_dynamic.bat 100 100 1000
-.\run_noisy_dynamic.bat 2 2 20
+python plot_results_all.py
 ```
+Plots appear under `result/<dataset>/plots/`.
 
-### MATLAB
-From the `MATLAB` folder you can run the MATLAB scripts directly (or use the batch runners that launch MATLAB instances):
-
-```powershell
-cd "c:\\Tsetlin Machine\\Performance-Study-of-Tsetlin-Machine-Model-Developed-using-MATLAB\\MATLAB"
+## Run MATLAB Demos
+From `MATLAB/` you can run each script directly:
+```
+cd MATLAB
 matlab -batch "MNIST('clauses',100)"
 matlab -batch "NoisyXOR('clauses',10)"
 matlab -batch "NormalXOR('clauses',10)"
 ```
-
-Dynamic runner (launch multiple MATLAB runs):
-
-```powershell
-.\run_mnist_dynamic.bat START STEP END
-.\run_noisy_xor_dynamic.bat START STEP END
-.\run_normal_xor_dynamic.bat START STEP END
+Batch over a clause range (Windows `.bat` helpers):
 ```
+./run_mnist_dynamic.bat START STEP END
+./run_noisy_xor_dynamic.bat START STEP END
+./run_normal_xor_dynamic.bat START STEP END
+```
+Notes: `STEP` must not be `0`. If omitted, it defaults to `1`.
 
-Important: the batch scripts validate `STEP` to avoid infinite loops; `STEP` must not be `0`. If `STEP` is omitted it defaults to `1`.
-
-### Pure-Python demos
-From the `TsetlinMachine-purePython` folder you can run the pure Python demos. Some batch files there launch the corresponding demos from `TsetlinMachine-master` instead (so the C-extension is used):
-
-```powershell
-cd "...\\TsetlinMachine-purePython"
+## Run Python Demos
+Python with C-extension (faster):
+```
+cd TsetlinMachine-master
+python MNISTDemo.py --clauses 100
+python NoisyXORDemo.py --clauses 10
+```
+Pure-Python (reference):
+```
+cd TsetlinMachine-purePython
 python MNISTPure.py --clauses 100
 python NoisyXORPure.py --clauses 10
-.\run_mnist_pure.bat START STEP END   # launches MNISTDemo.py in the master folder
-.\run_noisy_pure.bat START STEP END   # launches NoisyXORDemo.py in the master folder
+python NormalXORPure.py --clauses 10
+```
+Windows helpers to sweep clause ranges:
+```
+./run_mnist_dynamic.bat START STEP END       # in TsetlinMachine-master
+./run_noisy_dynamic.bat START STEP END       # in TsetlinMachine-master
+./run_mnist_pure.bat START STEP END          # launches MNISTDemo.py from master
+./run_noisy_pure.bat START STEP END          # launches NoisyXORDemo.py from master
 ```
 
-## Logs and results
-- Per-run epoch logs are saved in `*/result/<task>/epoch_log_YYYYMMDD_HHMMSS.csv`.
-- Summary run logs are appended to `*_result_log.csv` files inside the `result/` directories.
-- The repository contains a `.gitignore` that excludes most `result/` folders and CSV logs. If you already have logs tracked in git, remove them from the index to let `.gitignore` take effect:
-
-```powershell
-git rm --cached path\to\result\file.csv
-git commit -m "Remove tracked result logs"
+## Results and Logs
+- Per-epoch logs: `*/result/<task>/epoch_log_YYYYMMDD_HHMMSS.csv`
+- Summary logs: `*/result/*_result_log.csv`
+- Most `result/` content is git-ignored. If logs are tracked already, remove from index to let `.gitignore` work:
+```
+git rm --cached path/to/result/file.csv
+git commit -m "Stop tracking result logs"
 ```
 
-## Plotting results
-- Run `python plot_results_all.py` from the repo root to refresh dataset comparison figures in `result/<dataset>/plots/`.
-- Switch throughput charts with `--metric seconds_per_clause` or keep the new default `clauses_per_second`.
-- Tune aggregation with `--agg median` and dense epoch markers via `--marker-step 0` when you want every point.
-
-## Adding training time to logs
-Some scripts now include a `Time` column in their summary CSVs. If a script doesn't include it yet, you can add a duration field in the script right after training finishes. Example (Python):
-
-```python
-start = np.datetime64('now')
-...
-duration = (np.datetime64('now') - start) / np.timedelta64(1, 's')
-row['Time'] = round(float(duration), 4)
+## Plotting
+From the repo root:
 ```
+python plot_results_all.py
+```
+Options:
+- `--metric clauses_per_second` (default) or `seconds_per_clause`
+- `--agg mean|median`
+- `--marker-step N` (use `0` for every point)
 
-## Safety & notes
-- Batch scripts that launch many processes will consume system resources - run with care and monitor CPU/memory.
-- If you want PowerShell-native runner scripts (jobs/background) instead of `start cmd /k`, say so and I can add them.
+Outputs go to `result/<dataset>/plots/`.
 
-## Where to find help
-- Ask for tweaks to `plot_results_all.py` if you need additional plots or alternate aggregations saved alongside the current ones.
-- If you want me to standardize `Time` logging across all scripts, I can make that change in a single commit.
+## Tips & Troubleshooting
+- Use smaller `--clauses` to quickly validate end-to-end runs.
+- On Windows, if `python` launches the Microsoft Store, try `py -3`.
+- If MATLAB is not on PATH, use the full path to `matlab` executable.
+- High parallel batch counts can be CPU/memory heavy; monitor usage.
 
----
-Generated on: 2025-10-12
+## Need More?
+Open an issue or ask for:
+- Additional plots or custom aggregations in `plot_results_all.py`
+- Standardized time logging across all scripts
