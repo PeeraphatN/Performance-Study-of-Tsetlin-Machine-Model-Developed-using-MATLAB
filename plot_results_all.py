@@ -29,6 +29,24 @@ PLOTS_DIR = os.path.join(ROOT, "result", "plots")
 os.makedirs(PLOTS_DIR, exist_ok=True)
 
 
+# Fixed colors by method/source
+# Orange for MATLAB, Blue for Python variants
+COLOR_MAP = {
+    'MATLAB': '#ff7f0e',         # orange
+    'Python': '#1f77b4',         # blue
+    'Python-master': '#1f77b4',  # blue
+    'Python-pure': '#1f77b4',    # blue
+}
+
+
+def color_for(method: str):
+    if method in COLOR_MAP:
+        return COLOR_MAP[method]
+    # Fallbacks for prefixes
+    if method.startswith('Python'):
+        return COLOR_MAP['Python']
+    return None
+
 def find_files(patterns):
     """Return a list of files matching any of the given glob patterns (relative to ROOT)."""
     files = []
@@ -183,9 +201,10 @@ def plot_dataset(dataset, agg='mean', marker_step=10, metric='clauses_per_second
                 # plot as dots connected by line
                 # markevery controls marker density; if marker_step==0 show all markers
                 me = None if marker_step == 0 else marker_step
-                ax.plot(agg_ser.index, agg_ser.values, marker='o', linestyle='-', label=f"{method} ({agg})", markevery=me, markersize=4)
+                c = color_for(method)
+                ax.plot(agg_ser.index, agg_ser.values, marker='o', linestyle='-', label=f"{method} ({agg})", markevery=me, markersize=4, color=c)
                 # shaded std
-                ax.fill_between(agg_ser.index, (agg_ser - std_ser).values, (agg_ser + std_ser).values, alpha=0.2)
+                ax.fill_between(agg_ser.index, (agg_ser - std_ser).values, (agg_ser + std_ser).values, alpha=0.2, color=c)
                 plotted += 1
     if plotted:
         ax.set_title('Accuracy per epoch (aggregated)')
@@ -213,7 +232,8 @@ def plot_dataset(dataset, agg='mean', marker_step=10, metric='clauses_per_second
                     accuracies.append(float(acc))
                     break
     if methods:
-        ax.bar(methods, accuracies, color=['C0','C1','C2'])
+        colors = [color_for(m) for m in methods]
+        ax.bar(methods, accuracies, color=colors)
         ax.set_ylim(0, 1)
         ax.set_ylabel('Test accuracy')
         ax.set_title('Test accuracy: MATLAB vs Python')
@@ -241,7 +261,8 @@ def plot_dataset(dataset, agg='mean', marker_step=10, metric='clauses_per_second
                     times.append(tm)
                     break
     if methods:
-        ax.bar(methods, times, color=['C0','C1','C2'])
+        colors = [color_for(m) for m in methods]
+        ax.bar(methods, times, color=colors)
         ax.set_ylabel('Time (s)')
         ax.set_title('Training time')
     else:
@@ -316,11 +337,13 @@ def plot_dataset(dataset, agg='mean', marker_step=10, metric='clauses_per_second
         fig2, ax2 = plt.subplots(1, 2, figsize=(10, 4))
         # Accuracy
         width = 0.4
-        ax2[0].bar(methods, accs, width=width, color=['C0', 'C1', 'C2'][:len(methods)])
+        colors = [color_for(m) for m in methods]
+        ax2[0].bar(methods, accs, width=width, color=colors[:len(methods)])
         ax2[0].set_ylim(0, 1)
         ax2[0].set_title(f'{dataset}: Test accuracy')
         # Time
-        ax2[1].bar(methods, times, width=width, color=['C0', 'C1', 'C2'][:len(methods)])
+        colors = [color_for(m) for m in methods]
+        ax2[1].bar(methods, times, width=width, color=colors[:len(methods)])
         ax2[1].set_title(f'{dataset}: Training time (s)')
         outpath2 = os.path.join(dataset_plots_dir, f"{dataset}_method_compare.png")
         fig2.tight_layout()
@@ -354,7 +377,7 @@ def plot_dataset(dataset, agg='mean', marker_step=10, metric='clauses_per_second
         ax3.xaxis.set_major_locator(MaxNLocator(integer=True))
         for method in clause_methods:
             ser = clause_series[method]
-            ax3.plot(ser.index, ser.values, marker='o', linestyle='-', label=method)
+            ax3.plot(ser.index, ser.values, marker='o', linestyle='-', label=method, color=color_for(method))
         ax3.set_xlabel('Number of clauses')
         ax3.set_ylabel('Test accuracy')
         ax3.set_title(f'{dataset}: Accuracy vs number_of_clauses')
@@ -399,7 +422,7 @@ def plot_dataset(dataset, agg='mean', marker_step=10, metric='clauses_per_second
         ax4.xaxis.set_major_locator(MaxNLocator(integer=True))
         for method in metric_methods:
             ser = metric_series[method]
-            ax4.plot(ser.index, ser.values, marker='o', linestyle='-', label=method)
+            ax4.plot(ser.index, ser.values, marker='o', linestyle='-', label=method, color=color_for(method))
         ax4.set_xlabel('Number of clauses')
         if metric == 'clauses_per_second':
             ax4.set_ylabel('Clauses per second (clauses / s)')
@@ -444,7 +467,7 @@ def plot_dataset(dataset, agg='mean', marker_step=10, metric='clauses_per_second
         ax5.xaxis.set_major_locator(MaxNLocator(integer=True))
         for method in time_methods:
             ser = time_series[method]
-            ax5.plot(ser.index, ser.values, marker='o', linestyle='-', label=method)
+            ax5.plot(ser.index, ser.values, marker='o', linestyle='-', label=method, color=color_for(method))
         ax5.set_xlabel('Number of clauses')
         ax5.set_ylabel('Time (s)')
         ax5.set_title(f'{dataset}: Time vs number_of_clauses')
@@ -512,7 +535,7 @@ def main():
     # limit to requested methods
     methods_to_plot = [m for m in methods if m in args.methods]
     for i, m in enumerate(methods_to_plot):
-        ax.bar(x + (i-1)*width, acc_rows[m], width, label=m)
+        ax.bar(x + (i-1)*width, acc_rows[m], width, label=m, color=color_for(m))
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
     ax.set_ylim(0, 1)
@@ -526,7 +549,7 @@ def main():
     # Plot aggregated time
     fig, ax = plt.subplots(figsize=(8, 5))
     for i, m in enumerate(methods_to_plot):
-        ax.bar(x + (i-1)*width, time_rows[m], width, label=m)
+        ax.bar(x + (i-1)*width, time_rows[m], width, label=m, color=color_for(m))
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
     ax.set_ylabel('Time (s)')
