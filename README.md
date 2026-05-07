@@ -1,139 +1,173 @@
-# How to Use: Tsetlin Machine Demos (MATLAB + Python)
+# Performance Study of Tsetlin Machine: MATLAB vs Pure Python vs Python+C-extension
 
-This repo provides ready-to-run demos of the Tsetlin Machine in MATLAB and Python. Use it to train on MNIST and XOR variants, log results, and generate comparison plots.
+A controlled benchmarking study of the **Tsetlin Machine** algorithm across three implementations (MATLAB, Pure Python, Python+C-extension) on **MNIST**, **Normal XOR**, and **Noisy XOR** — quantifying speed, scaling, and accuracy trade-offs across **241 experiment runs**.
 
-## Prerequisites
-- MATLAB R2019b+ with `-batch` support (for CLI runs)
-- Python 3.8+ with `pip`
-- Recommended packages: `numpy`, `pandas`, `matplotlib`
+---
 
-Install Python deps (if needed):
+## Key Findings
+
+### 1. Pure Python vs MATLAB — apples-to-apples (interpreted vs interpreted)
+
+Across **150 controlled runs** (75 per language) on Normal XOR and Noisy XOR with sweeps over 2–20 clauses at 200 / 500 epochs:
+
+- **MATLAB scales better** as clause count grows. On Noisy XOR, MATLAB runtime grew only **1.7×** from 2→20 clauses, while Pure Python grew **5.3×**.
+- **Pure Python is faster at small clause counts** (2–4 clauses) but crosses over to slower beyond ~6 clauses.
+- **Both implementations are algorithmically equivalent**: both reach **100% test accuracy at 6 clauses on Noisy XOR** and **12 clauses on Normal XOR** (500 epochs), with accuracy variance under 1% across all configurations.
+
+| Clauses (NoisyXOR, 500 epochs) | MATLAB time (s) | Pure Python time (s) | Ratio |
+|---|---|---|---|
+| 2 | 150.3 | 104.3 | **0.69×** (Python faster) |
+| 6 | 192.5 | 217.3 | 1.13× |
+| 10 | 216.8 | 311.0 | 1.43× |
+| 20 | 254.6 | 550.5 | **2.16×** (Python slower) |
+
+![Noisy XOR time vs clauses](result/noisy_xor/plots/noisy_xor_time_vs_clauses.png)
+
+![Noisy XOR accuracy vs clauses](result/noisy_xor/plots/noisy_xor_accuracy_vs_clauses.png)
+
+### 2. Python + C-extension — a note
+
+A Python + C-extension implementation is also included in this repo (`TsetlinMachine-master/`). It was run on both Noisy XOR and MNIST and produced results consistent with the other implementations in terms of accuracy. However, these runs were not conducted under the same controlled environment as the MATLAB vs Pure Python comparison above, so no direct timing claims are made here. It exists as a practical reference for anyone who needs a faster implementation for larger-scale experiments.
+
+### 3. MNIST scaling (MATLAB only)
+
+The Pure Python implementation was infeasible on MNIST — a single run at higher clause counts exceeded **a week of compute** without converging. MATLAB was the only implementation run to completion on MNIST. Across 5 clause configurations (100–500) at 200 epochs:
+
+- **~92% test accuracy** at 500 clauses (200 epochs)
+- Accuracy improves monotonically from ~55% (100 clauses) → ~92% (500 clauses)
+
+![MNIST accuracy vs clauses](result/mnist/plots/mnist_accuracy_vs_clauses.png)
+
+---
+
+## Why this study?
+
+Most public Tsetlin Machine references publish a single implementation in isolation. This project asks a practical engineering question: **for the same algorithm, what does the implementation language actually cost you in time, scaling, and final accuracy?**
+
+The answer matters when choosing a research stack — MATLAB is common in academia for prototyping, but if your experiments need to scale to MNIST-size data, the choice has real compute consequences.
+
+---
+
+## What's in this repo
+
 ```
-pip install -r requirements.txt  # if present
-pip install numpy pandas matplotlib
+DataSet/                       # MNIST, NoisyXOR, NormalXOR (preprocessed)
+MATLAB/                        # MATLAB demos: MNIST.m, NoisyXOR.m, NormalXOR.m
+TsetlinMachine-master/         # Python + C-extension implementation
+TsetlinMachine-purePython/     # Pure Python reference implementation
+result/                        # Aggregated CSV logs and comparison plots
+plot_results_all.py            # Automated plotting pipeline
 ```
 
-## Repo Layout
-- `DataSet/` sample datasets (MNIST, XOR variants)
-- `MATLAB/` MATLAB demos: `MNIST.m`, `NoisyXOR.m`, `NormalXOR.m` (+ batch runners)
-- `TsetlinMachine-master/` Python/C demos: `MNISTDemo.py`, `NoisyXORDemo.py`
-- `TsetlinMachine-purePython/` Pure-Python demos: `MNISTPure.py`, `NoisyXORPure.py`, `NormalXORPure.py`
-- `result/` experiment outputs, logs, and plots
+**Experiment scope:**
+- 241 total runs across 3 implementations × 3 datasets
+- Hyperparameter sweeps over: clauses, epochs, T (threshold), s (specificity), TA states
+- Per-epoch CSV logging for full reproducibility
+- Automated comparison plots via `plot_results_all.py`
 
-## Quick Start (most users)
-1) Run a small XOR demo in Python (fast sanity check):
-```
+---
+
+## How to Use
+
+### Prerequisites
+
+- MATLAB R2019b+ (with `-batch` support for CLI runs)
+- Python 3.8+
+- `pip install numpy pandas matplotlib`
+
+### Quick Start
+
+Run a fast sanity-check XOR demo:
+
+```bash
 cd TsetlinMachine-purePython
 python NoisyXORPure.py --clauses 10
 ```
-2) Run MNIST in Python (C-extension demo):
-```
+
+Run MNIST with the C-extension:
+
+```bash
 cd TsetlinMachine-master
 python MNISTDemo.py --clauses 100
 ```
-3) Plot results (from repo root):
-```
-python plot_results_all.py
-```
-Plots appear under `result/<dataset>/plots/`.
 
-## Run MATLAB Demos
-From `MATLAB/` you can run each script directly:
-```
+Run the same problem in MATLAB:
+
+```bash
 cd MATLAB
 matlab -batch "MNIST('clauses',100)"
-matlab -batch "NoisyXOR('clauses',10)"
-matlab -batch "NormalXOR('clauses',10)"
-```
-Batch over a clause range (Windows `.bat` helpers):
-```
-./run_mnist_dynamic.bat START STEP END
-./run_noisy_xor_dynamic.bat START STEP END
-./run_normal_xor_dynamic.bat START STEP END
-```
-Notes: `STEP` must not be `0`. If omitted, it defaults to `1`.
-
-## Run Python Demos
-Python with C-extension (faster):
-```
-cd TsetlinMachine-master
-python MNISTDemo.py --clauses 100
-python NoisyXORDemo.py --clauses 10
-```
-Pure-Python (reference):
-```
-cd TsetlinMachine-purePython
-python MNISTPure.py --clauses 100
-python NoisyXORPure.py --clauses 10
-python NormalXORPure.py --clauses 10
-```
-Windows helpers to sweep clause ranges:
-```
-./run_mnist_dynamic.bat START STEP END       # in TsetlinMachine-master
-./run_noisy_dynamic.bat START STEP END       # in TsetlinMachine-master
-./run_mnist_pure.bat START STEP END          # launches MNISTDemo.py from master
-./run_noisy_pure.bat START STEP END          # launches NoisyXORDemo.py from master
 ```
 
-## Results and Logs
-- Per-epoch logs: `*/result/<task>/epoch_log_YYYYMMDD_HHMMSS.csv`
-- Summary logs: `*/result/*_result_log.csv`
-- Most `result/` content is git-ignored. If logs are tracked already, remove from index to let `.gitignore` work:
-```
-git rm --cached path/to/result/file.csv
-git commit -m "Stop tracking result logs"
-```
+Generate comparison plots from results:
 
-## Plotting
-From the repo root:
-```
+```bash
 python plot_results_all.py
 ```
-Options:
-- `--metric clauses_per_second` (default) or `seconds_per_clause`
-- `--agg mean|median`
-- `--marker-step N` (use `0` for every point)
 
-Outputs go to `result/<dataset>/plots/`.
+### Sweeping clause ranges
 
-## Adjustable Parameters
-All demos expose the same core hyperparameters. Use them to balance accuracy, speed, and memory.
+Windows `.bat` helpers for parameter sweeps:
 
-- `--T` or `T` (Threshold)
-  - Default: 15
-  - Meaning: Vote clipping threshold per class. Higher allows more clause votes before saturation; can improve capacity but may slow convergence.
+**MATLAB** (from `MATLAB/`):
+```bat
+run_mnist_dynamic.bat START STEP END
+run_noisy_xor_dynamic.bat START STEP END
+run_normal_xor_dynamic.bat START STEP END
+```
 
-- `--s` or `s` (Specificity/Sensitivity)
-  - Default: 3.9
-  - Meaning: Controls feedback probabilities. Lower tends to include more literals (more specific clauses); higher yields sparser clauses.
+**Python + C-extension** (from `TsetlinMachine-master/`):
+```bat
+run_mnist_dynamic.bat START STEP END
+run_noisy_dynamic.bat START STEP END
+```
 
-- `--clauses` or `clauses` (Number of Clauses)
-  - Defaults: MNIST 100–500 depending on script; XOR 10
-  - Meaning: Model capacity. More clauses can improve accuracy but increase compute and memory.
+**Pure Python** (from `TsetlinMachine-purePython/`):
+```bat
+run_mnist_pure.bat START STEP END
+run_noisy_xor_pure.bat START STEP END
+run_normal_xor_pure.bat START STEP END
+```
 
-- `--states` or `states` (TA States per Literal)
-  - Default: 100
-  - Meaning: Automaton confidence granularity. More states smooth updates; uses more memory.
+### Hyperparameters
 
-- `--epochs` or `epochs` (Training Epochs)
-  - Defaults: MNIST 200; XOR 200–500 (script-dependent)
-  - Meaning: Full passes over training set. Increase until accuracy plateaus.
+All demos expose the same core hyperparameters:
 
-How to pass parameters:
-- Python: `python MNISTDemo.py --clauses 400 --T 25 --s 3.5 --states 200 --epochs 300`
-- MATLAB: `matlab -batch "MNIST('clauses',400,'T',25,'s',3.5,'states',200,'epochs',300)"`
+| Parameter | Default | Effect |
+|---|---|---|
+| `clauses` | 10–500 | Model capacity. More clauses → higher accuracy, more compute. |
+| `T` (threshold) | 15 | Vote-clipping ceiling. Higher allows more clause votes before saturation. |
+| `s` (specificity) | 3.9 | Feedback probability. Lower → more specific clauses. |
+| `states` | 100 | Tsetlin Automaton confidence granularity. |
+| `epochs` | 200 | Full passes over training set. |
 
-Notes:
-- Script defaults vary slightly (check `--help` in Python demos).
-- Very large `clauses × states` settings can consume significant RAM; scale gradually.
+Pass via CLI (Python) or function args (MATLAB):
 
-## Tips & Troubleshooting
-- Use smaller `--clauses` to quickly validate end-to-end runs.
-- On Windows, if `python` launches the Microsoft Store, try `py -3`.
-- If MATLAB is not on PATH, use the full path to `matlab` executable.
-- High parallel batch counts can be CPU/memory heavy; monitor usage.
+```bash
+python MNISTDemo.py --clauses 400 --T 25 --s 3.5 --states 200 --epochs 300
+matlab -batch "MNIST('clauses',400,'T',25,'s',3.5,'states',200,'epochs',300)"
+```
 
-## Need More?
-Open an issue or ask for:
-- Additional plots or custom aggregations in `plot_results_all.py`
-- Standardized time logging across all scripts
+---
+
+## Results & Logs
+
+- Per-epoch logs: `*/result/<task>/epoch_log_YYYYMMDD_HHMMSS.csv`
+- Summary logs: `*/result/*_result_log.csv` (these were used for all findings above)
+- Plots: `result/<dataset>/plots/`
+
+Most generated `result/` content is git-ignored. The summary CSVs are tracked so the findings are reproducible from the data.
+
+---
+
+## Honest caveats
+
+- **Pure Python on MNIST was not run to completion** — high clause counts exceed practical compute time on a single machine. The MATLAB-vs-Pure-Python comparison is therefore strongest on the XOR datasets.
+- **Hardware was held constant** across runs but is a single-machine setup; absolute times will differ on other hardware. The *ratios* between implementations should remain stable.
+- **Stochastic variance**: Tsetlin Machines are stochastic. Each (clause, epoch) configuration was run 3–4 times and averaged. A few configurations show notable variance (e.g., NormalXOR @ 14 clauses) and are flagged in the summary CSVs.
+
+---
+
+## Author
+
+**Peeraphat Naowasaisee** — Final-year Computer Engineering, RMUTT
+[GitHub](https://github.com/PeeraphatN) · contactpeeraphat.n@gmail.com
